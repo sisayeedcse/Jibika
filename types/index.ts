@@ -2,13 +2,20 @@ export type Role = 'WORKER' | 'COMMUNITY' | 'CONTRIBUTOR' | 'VENDOR' | 'ADMIN';
 
 export type AssetRequestStatus = 
   | 'REQUESTED' 
-  | 'VERIFIED' 
-  | 'AI_ASSESSED' 
+  | 'COMMUNITY_APPROVED' 
+  | 'ADMIN_APPROVED' 
   | 'FUNDING' 
   | 'FUNDED' 
   | 'PROCURED' 
   | 'DELIVERED' 
   | 'MONITORING';
+
+export interface Community {
+  id: string;
+  name: string;
+  location: string;
+  leaderId: string;
+}
 
 export interface Worker {
   id: string;
@@ -20,6 +27,8 @@ export interface Worker {
   profileImageUrl?: string;
   story: string;
   verified: boolean;
+  communityId?: string;
+  communityStatus?: 'NONE' | 'PENDING' | 'APPROVED';
 }
 
 export interface AssetCategory {
@@ -94,6 +103,7 @@ export interface LifecycleLog {
 
 // Global Demo State
 export interface JibikaState {
+  communities: Community[];
   workers: Worker[];
   assetRequests: AssetRequest[];
   verifications: Verification[];
@@ -107,8 +117,18 @@ export interface JibikaState {
   
   // Actions
   setActiveRole: (role: Role, userId: string) => void;
+  
+  // Worker & Community Actions
+  registerWorker: (worker: Partial<Worker>) => void;
+  requestJoinCommunity: (workerId: string, communityId: string) => void;
+  approveCommunityJoin: (workerId: string) => void;
   createAssetRequest: (request: Partial<AssetRequest>) => void;
-  verifyRequest: (verificationId: string, notes: string) => void;
+  
+  // Old verification replaced by community/admin approval
+  verifyRequest: (verificationId: string, notes: string) => void; // Keep for backward compat or transition
+  communityApproveRequest: (requestId: string, notes: string) => void;
+  adminApproveRequest: (requestId: string) => void;
+  
   runAIAssessment: (requestId: string) => void;
   addContribution: (poolId: string, amount: number) => void;
   markProcured: (requestId: string) => void;

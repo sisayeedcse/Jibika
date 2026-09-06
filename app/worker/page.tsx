@@ -15,6 +15,7 @@ export default function WorkerDashboard() {
 
   const worker = workers.find(w => w.id === activeUserId);
   const activeRequest = assetRequests.find(r => r.workerId === activeUserId);
+  const { communities, requestJoinCommunity } = useJibikaStore();
 
   if (!worker) return <div>Worker not found</div>;
 
@@ -34,13 +35,53 @@ export default function WorkerDashboard() {
 
   const getStatusIcon = (status: string) => {
     if (status === 'DELIVERED' || status === 'MONITORING') return <CheckCircle2 className="h-6 w-6 text-green-500" />;
-    if (status === 'REQUESTED' || status === 'VERIFIED') return <Clock className="h-6 w-6 text-yellow-500" />;
+    if (status === 'REQUESTED' || status === 'COMMUNITY_APPROVED' || status === 'ADMIN_APPROVED') return <Clock className="h-6 w-6 text-yellow-500" />;
     return <ActivitySquare className="h-6 w-6 text-primary-600" />;
   };
 
   const myLogs = lifecycleLogs
     .filter(log => log.assetRequestId === activeRequest?.id)
     .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
+
+  const renderCommunitySection = () => {
+    if (worker.communityStatus === 'APPROVED') {
+      return null;
+    }
+    
+    if (worker.communityStatus === 'PENDING') {
+      return (
+        <Card className="border-warning-200 bg-warning-50 mb-6">
+          <CardContent className="flex flex-col items-center justify-center p-8 text-center">
+            <Clock className="h-8 w-8 text-warning-600 mb-4" />
+            <h3 className="text-xl font-semibold mb-2">Waiting for Community Approval</h3>
+            <p className="text-slate-600">Your request to join the community is pending. Please wait for the leader to approve you before requesting an asset.</p>
+          </CardContent>
+        </Card>
+      );
+    }
+
+    return (
+      <Card className="border-dashed border-2 bg-slate-50 mb-6">
+        <CardHeader>
+          <CardTitle>Join a Community</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <p className="text-slate-500">You must join a verified local community before you can request an asset.</p>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {communities.map(c => (
+              <div key={c.id} className="p-4 border border-slate-200 rounded-lg flex justify-between items-center bg-white hover:border-primary-300">
+                <div>
+                  <h4 className="font-semibold">{c.name}</h4>
+                  <p className="text-xs text-slate-500">{c.location}</p>
+                </div>
+                <Button size="sm" onClick={() => requestJoinCommunity(worker.id, c.id)}>Join</Button>
+              </div>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
+    );
+  };
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-3xl space-y-6">
@@ -53,7 +94,9 @@ export default function WorkerDashboard() {
         </div>
       </div>
 
-      {!activeRequest ? (
+      {renderCommunitySection()}
+
+      {worker.communityStatus === 'APPROVED' && !activeRequest && (
         <Card className="border-dashed border-2 bg-slate-50/50 dark:bg-slate-900/50">
           <CardContent className="flex flex-col items-center justify-center p-12 text-center space-y-4">
             <div className="h-16 w-16 bg-primary-100 dark:bg-primary-900/20 rounded-full flex items-center justify-center">
@@ -72,7 +115,9 @@ export default function WorkerDashboard() {
             </Button>
           </CardContent>
         </Card>
-      ) : (
+      )}
+
+      {worker.communityStatus === 'APPROVED' && activeRequest && (
         <div className="space-y-6">
           <Card>
             <CardHeader className="border-b border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/50">

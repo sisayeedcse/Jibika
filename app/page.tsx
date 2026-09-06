@@ -49,6 +49,11 @@ export default function LandingPage() {
               ? 'Connecting verified livelihood needs with small-scale capital through trust and AI.' 
               : 'বিশ্বাস এবং কৃত্রিম বুদ্ধিমত্তার মাধ্যমে যাচাইকৃত কর্মীদের সাথে ক্ষুদ্র মূলধনের সংযোগ স্থাপন।'}
           </p>
+          <div className="pt-4 flex justify-center animate-in fade-in slide-in-from-bottom-10 duration-700 delay-200">
+            <Button size="lg" className="bg-primary-600 hover:bg-primary-700 text-white font-bold px-8 py-6 rounded-full text-lg shadow-lg hover:shadow-xl transition-all" onClick={() => router.push('/register')}>
+              Create a Worker Profile
+            </Button>
+          </div>
         </div>
       </section>
 

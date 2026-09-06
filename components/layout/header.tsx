@@ -2,15 +2,13 @@
 
 import Link from 'next/link';
 import { useI18n } from '@/lib/i18n';
-import { useTheme } from 'next-themes';
 import { Button } from '@/components/ui/button';
-import { Sun, Moon, Globe, Menu, Bell, HelpCircle, RotateCcw } from 'lucide-react';
+import { Globe, Menu, Bell, HelpCircle, RotateCcw } from 'lucide-react';
 import { useJibikaStore } from '@/store/jibikaStore';
 import { useState, useEffect } from 'react';
 
 export function Header() {
   const { language, setLanguage, t } = useI18n();
-  const { theme, setTheme } = useTheme();
   const { activeRole, activeUserId, lifecycleLogs, resetStore } = useJibikaStore();
   const [mounted, setMounted] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
@@ -19,10 +17,6 @@ export function Header() {
 
   const toggleLanguage = () => {
     setLanguage(language === 'en' ? 'bn' : 'en');
-  };
-
-  const toggleTheme = () => {
-    setTheme(theme === 'dark' ? 'light' : 'dark');
   };
 
   // Mock notifications based on recent logs for the active role (Simplified logic)
@@ -103,17 +97,6 @@ export function Header() {
               {language === 'en' ? 'EN' : 'বাং'}
             </span>
           </Button>
-          
-          {/* Theme Toggle */}
-          {mounted && (
-            <Button variant="ghost" size="icon" onClick={toggleTheme} aria-label="Toggle theme">
-              {theme === 'dark' ? (
-                <Sun className="h-5 w-5 text-yellow-500 transition-all hover:scale-110" />
-              ) : (
-                <Moon className="h-5 w-5 text-slate-600 transition-all hover:scale-110" />
-              )}
-            </Button>
-          )}
 
           <Button variant="ghost" size="icon" className="md:hidden">
             <Menu className="h-5 w-5" />

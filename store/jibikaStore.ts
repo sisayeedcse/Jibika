@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { JibikaState, AssetRequest, Verification, AIAssessment, FundingPool, LifecycleLog, AssetRequestStatus, Role } from "@/types";
+import { JibikaState, AssetRequest, Verification, AIAssessment, FundingPool, LifecycleLog, AssetRequestStatus, Role, Worker } from "@/types";
 import { DEMO_INITIAL_STATE } from "@/data/demoData";
 
 const createLog = (
@@ -26,6 +26,40 @@ export const useJibikaStore = create<JibikaState>((set, get) => ({
   
   setActiveRole: (role, userId) => set({ activeRole: role, activeUserId: userId }),
   resetStore: () => set({ ...DEMO_INITIAL_STATE, activeRole: 'WORKER', activeUserId: 'w-1' }),
+
+  registerWorker: (worker) => {
+    const newWorker: Worker = {
+      id: `w-new-${Date.now()}`,
+      name: worker.name || 'New Worker',
+      occupation: worker.occupation || 'Unspecified',
+      experience: worker.experience || 'None',
+      location: worker.location || 'Unknown',
+      phone: worker.phone || '01700000000',
+      story: worker.story || '',
+      verified: false,
+      communityStatus: 'NONE'
+    };
+    set((state) => ({
+      workers: [...state.workers, newWorker],
+      activeUserId: newWorker.id
+    }));
+  },
+
+  requestJoinCommunity: (workerId, communityId) => {
+    set((state) => ({
+      workers: state.workers.map(w => 
+        w.id === workerId ? { ...w, communityId, communityStatus: 'PENDING' } : w
+      )
+    }));
+  },
+
+  approveCommunityJoin: (workerId) => {
+    set((state) => ({
+      workers: state.workers.map(w => 
+        w.id === workerId ? { ...w, communityStatus: 'APPROVED' } : w
+      )
+    }));
+  },
   
   createAssetRequest: (request) => {
     const newRequest: AssetRequest = {
@@ -39,14 +73,6 @@ export const useJibikaStore = create<JibikaState>((set, get) => ({
       updatedAt: new Date().toISOString(),
     };
     
-    const newVerification: Verification = {
-      id: `ver-${Date.now()}`,
-      assetRequestId: newRequest.id,
-      communityMemberId: 'community-001',
-      status: 'PENDING',
-      notes: ''
-    };
-
     const log = createLog(
       newRequest.id,
       'Asset request created',
@@ -57,30 +83,39 @@ export const useJibikaStore = create<JibikaState>((set, get) => ({
 
     set((state) => ({
       assetRequests: [...state.assetRequests, newRequest],
-      verifications: [...state.verifications, newVerification],
       lifecycleLogs: [...state.lifecycleLogs, log],
     }));
   },
   
+  // Backward compatibility alias if needed
   verifyRequest: (verificationId, notes) => {
+    const state = get();
+    const ver = state.verifications.find(v => v.id === verificationId);
+    if (ver) {
+      get().communityApproveRequest(ver.assetRequestId, notes);
+    }
+  },
+
+  communityApproveRequest: (requestId, notes) => {
     set((state) => {
-      const verifications = state.verifications.map(v => 
-        v.id === verificationId ? { ...v, status: 'VERIFIED' as const, notes, verifiedAt: new Date().toISOString() } : v
-      );
-      
-      const verification = state.verifications.find(v => v.id === verificationId);
-      if (!verification) return state;
-      
-      const reqId = verification.assetRequestId;
-      
       const requests = state.assetRequests.map(r =>
-        r.id === reqId ? { ...r, status: 'VERIFIED' as AssetRequestStatus, updatedAt: new Date().toISOString() } : r
+        r.id === requestId ? { ...r, status: 'COMMUNITY_APPROVED' as AssetRequestStatus, updatedAt: new Date().toISOString() } : r
       );
-
-      const log = createLog(reqId, 'Community verification completed', 'কমিউনিটি যাচাইকরণ সম্পন্ন হয়েছে', 'REQUESTED', 'VERIFIED');
-
-      return { verifications, assetRequests: requests, lifecycleLogs: [...state.lifecycleLogs, log] };
+      const log = createLog(requestId, 'Community Leader approved request', 'কমিউনিটি লিডার অনুরোধ অনুমোদন করেছেন', 'REQUESTED', 'COMMUNITY_APPROVED');
+      return { assetRequests: requests, lifecycleLogs: [...state.lifecycleLogs, log] };
     });
+  },
+
+  adminApproveRequest: (requestId) => {
+    set((state) => {
+      const requests = state.assetRequests.map(r =>
+        r.id === requestId ? { ...r, status: 'ADMIN_APPROVED' as AssetRequestStatus, updatedAt: new Date().toISOString() } : r
+      );
+      const log = createLog(requestId, 'Main Admin approved request', 'প্রধান অ্যাডমিন অনুরোধ অনুমোদন করেছেন', 'COMMUNITY_APPROVED', 'ADMIN_APPROVED');
+      return { assetRequests: requests, lifecycleLogs: [...state.lifecycleLogs, log] };
+    });
+    // Immediately run AI assessment for demo flow
+    get().runAIAssessment(requestId);
   },
   
   runAIAssessment: (requestId) => {
@@ -89,18 +124,14 @@ export const useJibikaStore = create<JibikaState>((set, get) => ({
         id: `ai-${Date.now()}`,
         assetRequestId: requestId,
         suitabilityScore: 'HIGH',
-        recommendedAssetCategory: 'Industrial Sewing Machine',
+        recommendedAssetCategory: 'System Recommended Asset',
         explanation: [
-          'Matches occupation (Tailor)',
-          '5 years experience supports safe usage',
-          'High demand in Chattogram'
+          'Matches occupation',
+          'Experience supports safe usage',
+          'High demand in area'
         ],
         createdAt: new Date().toISOString()
       };
-      
-      const requests = state.assetRequests.map(r =>
-        r.id === requestId ? { ...r, status: 'AI_ASSESSED' as AssetRequestStatus, aiAssessmentId: assessment.id, updatedAt: new Date().toISOString() } : r
-      );
       
       const pool: FundingPool = {
         id: `pool-${Date.now()}`,
@@ -111,19 +142,17 @@ export const useJibikaStore = create<JibikaState>((set, get) => ({
         status: 'OPEN'
       };
 
-      const log = createLog(requestId, 'AI assessment completed & Funding opened', 'এআই মূল্যায়ন সম্পন্ন এবং ফান্ডিং শুরু হয়েছে', 'VERIFIED', 'AI_ASSESSED');
-      const log2 = createLog(requestId, 'Opportunity matched to contributors', 'কন্ট্রিবিউটরদের জন্য সুযোগ তৈরি হয়েছে', 'AI_ASSESSED', 'FUNDING');
+      const log = createLog(requestId, 'AI assessment completed & Funding opened', 'এআই মূল্যায়ন সম্পন্ন ও ফান্ডিং শুরু হয়েছে', 'ADMIN_APPROVED', 'FUNDING');
 
-      // To simplify flow, automatically transition from AI_ASSESSED to FUNDING
-      const requestsToFunding = requests.map(r => 
-        r.id === requestId ? { ...r, status: 'FUNDING' as AssetRequestStatus } : r
+      const requestsToFunding = state.assetRequests.map(r => 
+        r.id === requestId ? { ...r, status: 'FUNDING' as AssetRequestStatus, aiAssessmentId: assessment.id } : r
       );
 
       return { 
         aiAssessments: [...state.aiAssessments, assessment],
         fundingPools: [...state.fundingPools, pool],
         assetRequests: requestsToFunding,
-        lifecycleLogs: [...state.lifecycleLogs, log, log2]
+        lifecycleLogs: [...state.lifecycleLogs, log]
       };
     });
   },
@@ -159,7 +188,7 @@ export const useJibikaStore = create<JibikaState>((set, get) => ({
         const requests = state.assetRequests.map(r =>
           r.id === reqId ? { ...r, status: 'FUNDED' as AssetRequestStatus, updatedAt: new Date().toISOString() } : r
         );
-        const log = createLog(reqId, 'Funding target reached', 'ফান্ডিং লক্ষ্য অর্জিত হয়েছে', 'FUNDING', 'FUNDED');
+        const log = createLog(reqId, 'Funding target reached', 'তহবিলের লক্ষ্য অর্জিত হয়েছে', 'FUNDING', 'FUNDED');
         return { fundingPools: pools, assetRequests: requests, lifecycleLogs: [...state.lifecycleLogs, log] };
       }
       
@@ -172,7 +201,7 @@ export const useJibikaStore = create<JibikaState>((set, get) => ({
       const requests = state.assetRequests.map(r =>
         r.id === requestId ? { ...r, status: 'PROCURED' as AssetRequestStatus, updatedAt: new Date().toISOString() } : r
       );
-      const log = createLog(requestId, 'Vendor assigned and procured', 'ভেন্ডর নিয়োগ এবং সংগ্রহ সম্পন্ন', 'FUNDED', 'PROCURED');
+      const log = createLog(requestId, 'Vendor assigned and procured', 'ভেন্ডর বরাদ্দ করা হয়েছে', 'FUNDED', 'PROCURED');
       return { assetRequests: requests, lifecycleLogs: [...state.lifecycleLogs, log] };
     });
   },
@@ -182,11 +211,10 @@ export const useJibikaStore = create<JibikaState>((set, get) => ({
       const requests = state.assetRequests.map(r =>
         r.id === requestId ? { ...r, status: 'DELIVERED' as AssetRequestStatus, updatedAt: new Date().toISOString() } : r
       );
-      // Let's immediately transition to MONITORING since it's an MVP demo
       const requestsMonitored = requests.map(r =>
         r.id === requestId ? { ...r, status: 'MONITORING' as AssetRequestStatus } : r
       );
-      const log = createLog(requestId, 'Asset delivered', 'সম্পদ হস্তান্তর করা হয়েছে', 'PROCURED', 'DELIVERED');
+      const log = createLog(requestId, 'Asset delivered', 'সম্পদ ডেলিভারি করা হয়েছে', 'PROCURED', 'DELIVERED');
       const log2 = createLog(requestId, 'Monitoring started', 'পর্যবেক্ষণ শুরু হয়েছে', 'DELIVERED', 'MONITORING');
       return { assetRequests: requestsMonitored, lifecycleLogs: [...state.lifecycleLogs, log, log2] };
     });

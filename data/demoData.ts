@@ -1,15 +1,23 @@
-import { Worker, AssetRequest, FundingPool, AIAssessment, Verification, LifecycleLog, Contribution } from "@/types";
+import { Worker, AssetRequest, FundingPool, AIAssessment, Verification, LifecycleLog, Contribution, Community } from "@/types";
+
+export const DEMO_COMMUNITIES: Community[] = [
+  { id: 'com-1', name: 'Dhaka Tailors Co-op', location: 'Dhaka', leaderId: 'cm-1' },
+  { id: 'com-2', name: 'Chattogram Food Vendors', location: 'Chattogram', leaderId: 'cm-2' },
+  { id: 'com-3', name: 'Rajshahi Transport Union', location: 'Rajshahi', leaderId: 'cm-3' }
+];
 
 export const DEMO_WORKERS: Worker[] = [
   {
     id: 'w-1', name: 'Rahim Uddin', occupation: 'Tailor', experience: '5 years', location: 'Dhaka', phone: '01700000001',
     story: 'I need an industrial sewing machine to take bulk orders and increase my daily income.', verified: false,
-    profileImageUrl: 'https://images.unsplash.com/photo-1551817958-c5b51e52befa?w=400&q=80'
+    profileImageUrl: 'https://images.unsplash.com/photo-1551817958-c5b51e52befa?w=400&q=80',
+    communityId: 'com-1', communityStatus: 'APPROVED'
   },
   {
     id: 'w-2', name: 'Fatima Begum', occupation: 'Street Food Vendor', experience: '3 years', location: 'Chattogram', phone: '01700000002',
     story: 'My wooden cart broke during the monsoon. A steel cart will let me serve food safely again.', verified: true,
-    profileImageUrl: 'https://images.unsplash.com/photo-1577902462377-101f3b3cc4bc?w=400&q=80'
+    profileImageUrl: 'https://images.unsplash.com/photo-1577902462377-101f3b3cc4bc?w=400&q=80',
+    communityId: 'com-2', communityStatus: 'APPROVED'
   },
   {
     id: 'w-3', name: 'Karim Ali', occupation: 'Rickshaw Puller', experience: '10 years', location: 'Rajshahi', phone: '01700000003',
@@ -50,7 +58,7 @@ export const DEMO_WORKERS: Worker[] = [
 
 export const DEMO_ASSET_REQUESTS: AssetRequest[] = [
   { id: 'ar-1', workerId: 'w-1', requestedAssetCategory: 'Industrial Sewing Machine', reason: 'Bulk orders', requestedAmount: 35000, status: 'REQUESTED', createdAt: '2026-09-01T10:00:00Z', updatedAt: '2026-09-01T10:00:00Z' },
-  { id: 'ar-2', workerId: 'w-2', requestedAssetCategory: 'Steel Food Cart', reason: 'Safe food service', requestedAmount: 18000, status: 'VERIFIED', verificationId: 'v-2', createdAt: '2026-09-02T10:00:00Z', updatedAt: '2026-09-02T12:00:00Z' },
+  { id: 'ar-2', workerId: 'w-2', requestedAssetCategory: 'Steel Food Cart', reason: 'Safe food service', requestedAmount: 18000, status: 'COMMUNITY_APPROVED', verificationId: 'v-2', createdAt: '2026-09-02T10:00:00Z', updatedAt: '2026-09-02T12:00:00Z' },
   { id: 'ar-3', workerId: 'w-3', requestedAssetCategory: 'Battery-Assisted Rickshaw', reason: 'Own instead of rent', requestedAmount: 45000, status: 'FUNDING', verificationId: 'v-3', aiAssessmentId: 'ai-3', fundingPoolId: 'fp-3', createdAt: '2026-08-25T10:00:00Z', updatedAt: '2026-08-27T10:00:00Z' },
   { id: 'ar-4', workerId: 'w-4', requestedAssetCategory: 'Display Freezer', reason: 'Sell perishables', requestedAmount: 28000, status: 'FUNDED', verificationId: 'v-4', aiAssessmentId: 'ai-4', fundingPoolId: 'fp-4', createdAt: '2026-08-20T10:00:00Z', updatedAt: '2026-09-05T10:00:00Z' },
   { id: 'ar-5', workerId: 'w-5', requestedAssetCategory: 'Power Tiller', reason: 'Faster cultivation', requestedAmount: 85000, status: 'PROCURED', verificationId: 'v-5', aiAssessmentId: 'ai-5', fundingPoolId: 'fp-5', procurementId: 'pr-5', createdAt: '2026-08-10T10:00:00Z', updatedAt: '2026-09-04T10:00:00Z' },
@@ -111,6 +119,7 @@ export const DEMO_LIFECYCLE_LOGS: LifecycleLog[] = [
 ];
 
 export const DEMO_INITIAL_STATE = {
+  communities: DEMO_COMMUNITIES,
   workers: DEMO_WORKERS,
   assetRequests: DEMO_ASSET_REQUESTS,
   verifications: DEMO_VERIFICATIONS,
