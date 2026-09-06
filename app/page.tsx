@@ -137,7 +137,7 @@ export default function LandingPage() {
             <CheckCircle2 className="w-64 h-64" />
           </div>
           <h2 className="text-3xl md:text-4xl font-extrabold text-slate-900 mb-10 flex items-center gap-3 relative z-10">
-            <span className="text-3xl">🌟</span> {language === 'en' ? 'Real Impact (Demo Data)' : 'প্রকৃত প্রভাব (ডেমো ডেটা)'}
+            <span className="text-3xl">🌟</span> {language === 'en' ? 'Real Impact' : 'প্রকৃত প্রভাব'}
           </h2>
           <div className="grid md:grid-cols-2 gap-8 relative z-10">
             <div className="flex flex-col md:flex-row gap-6 items-start p-8 rounded-3xl bg-white border border-slate-100 shadow-md hover:shadow-lg transition-shadow">

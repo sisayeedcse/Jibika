@@ -39,17 +39,14 @@ export function Header() {
             <span className="rounded-full bg-slate-100 px-4 py-1.5 text-xs font-bold text-slate-800 border border-slate-200">
               {activeRole}
             </span>
-            <span className="rounded-full bg-accent-100 px-2 py-0.5 text-[10px] font-bold text-accent-700 border border-accent-200 uppercase tracking-widest hidden sm:inline-block">
-              {t('ui.demo_data')}
-            </span>
           </div>
         </div>
 
         <div className="flex items-center space-x-1 sm:space-x-2">
-          {/* Reset Demo Button */}
-          <Button variant="ghost" size="sm" onClick={resetStore} className="hidden md:flex text-slate-500 hover:text-red-600 transition-colors" title="Reset Demo Data">
-            <RotateCcw className="h-4 w-4 mr-1" />
-            <span className="text-xs">Reset</span>
+          {/* Reset Button */}
+          <Button variant="ghost" size="sm" onClick={resetStore} className="hidden md:flex text-slate-500 hover:text-red-600 transition-colors" title="Reset Data">
+            <RotateCcw className="h-4 w-4 mr-2" />
+            <span className="text-xs font-semibold uppercase tracking-wider">{t('ui.reset')}</span>
           </Button>
 
           {/* Help & Support */}

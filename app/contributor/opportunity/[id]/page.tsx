@@ -97,9 +97,9 @@ export default function OpportunityDetail({ params }: { params: Promise<{ id: st
                     </li>
                   ))}
                 </ul>
-                <div className="mt-4 text-xs text-slate-400">
-                  {language === 'en' ? 'Note: This is an AI-assisted estimate based on demo data.' : 'দ্রষ্টব্য: এটি ডেমো ডেটার উপর ভিত্তি করে একটি এআই-সহায়তা অনুমান।'}
-                </div>
+                <p className="text-xs text-slate-500 mt-2 text-center">
+                  {language === 'en' ? 'Note: This is an AI-assisted estimate.' : 'দ্রষ্টব্য: এটি একটি এআই-সহায়তা প্রাপ্ত অনুমান।'}
+                </p>
               </CardContent>
             </Card>
           )}
