@@ -5,6 +5,7 @@ import { useI18n } from '@/lib/i18n';
 import { Button } from '@/components/ui/button';
 import { Globe, Menu, Bell, HelpCircle, RotateCcw } from 'lucide-react';
 import { useJibikaStore } from '@/store/jibikaStore';
+import { Logo } from '@/components/ui/logo';
 import { useState, useEffect } from 'react';
 
 export function Header() {
@@ -24,20 +25,18 @@ export function Header() {
   const unreadCount = activeRole === 'WORKER' ? recentLogs.length : 0; // Fake count for demo feel
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-slate-200 bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/60 dark:border-slate-800 dark:bg-slate-900/95 shadow-sm">
-      <div className="container mx-auto flex h-16 items-center justify-between px-4">
-        <div className="flex items-center gap-2">
-          <Link href="/" className="flex items-center space-x-2 group">
-            <div className="h-9 w-9 rounded-xl bg-gradient-to-br from-primary-700 to-primary-500 flex items-center justify-center text-white font-bold shadow-md group-hover:shadow-lg transition-all">
-              J
-            </div>
-            <span className="font-bold text-xl tracking-tight text-primary-700 dark:text-primary-500 hidden sm:inline-block">
+    <header className="sticky top-0 z-50 w-full bg-white/80 backdrop-blur-md shadow-sm border-b border-slate-100">
+      <div className="container mx-auto flex h-20 items-center justify-between px-4">
+        <div className="flex items-center gap-3">
+          <Link href="/" className="flex items-center space-x-3 group">
+            <Logo className="h-10 w-10 shadow-md group-hover:shadow-xl group-hover:scale-105 transition-all" />
+            <span className="font-extrabold text-2xl tracking-tight text-primary-700 hidden sm:inline-block group-hover:text-primary-600 transition-colors">
               {t('app.title')}
             </span>
           </Link>
           
-          <div className="ml-4 flex items-center gap-2">
-            <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-800 dark:bg-slate-800 dark:text-slate-300 border border-slate-200 dark:border-slate-700">
+          <div className="ml-6 flex items-center gap-2">
+            <span className="rounded-full bg-slate-100 px-4 py-1.5 text-xs font-bold text-slate-800 border border-slate-200">
               {activeRole}
             </span>
             <span className="rounded-full bg-accent-100 px-2 py-0.5 text-[10px] font-bold text-accent-700 border border-accent-200 uppercase tracking-widest hidden sm:inline-block">
@@ -73,12 +72,12 @@ export function Header() {
             </Button>
             
             {showNotifications && (
-              <div className="absolute right-0 mt-2 w-80 rounded-xl border border-slate-200 bg-white p-4 shadow-xl dark:border-slate-800 dark:bg-slate-900">
-                <h4 className="font-semibold text-sm mb-3">Notifications</h4>
+              <div className="absolute right-0 mt-2 w-80 rounded-2xl border border-slate-100 bg-white p-5 shadow-2xl">
+                <h4 className="font-bold text-sm mb-3 text-slate-800">Notifications</h4>
                 <div className="space-y-3">
                   {recentLogs.map(log => (
-                    <div key={log.id} className="text-sm pb-3 border-b border-slate-100 dark:border-slate-800 last:border-0 last:pb-0">
-                      <p className="font-medium">{language === 'en' ? log.event : log.eventBn}</p>
+                    <div key={log.id} className="text-sm pb-3 border-b border-slate-100 last:border-0 last:pb-0">
+                      <p className="font-semibold text-slate-900">{language === 'en' ? log.event : log.eventBn}</p>
                       <p className="text-xs text-slate-500 mt-1">{new Date(log.timestamp).toLocaleString()}</p>
                     </div>
                   ))}
@@ -88,18 +87,18 @@ export function Header() {
             )}
           </div>
 
-          <div className="h-6 w-px bg-slate-200 dark:bg-slate-800 mx-1" />
+          <div className="h-8 w-px bg-slate-200 mx-2" />
 
           {/* Language Toggle */}
-          <Button variant="ghost" size="icon" onClick={toggleLanguage} aria-label="Toggle language" className="relative group">
-            <Globe className="h-5 w-5 text-slate-600 dark:text-slate-400 group-hover:text-primary-600 transition-colors" />
-            <span className="absolute -bottom-1 -right-1 text-[10px] font-bold bg-white dark:bg-slate-900 rounded-full px-1 shadow-sm border border-slate-200 dark:border-slate-700">
+          <Button variant="ghost" size="icon" onClick={toggleLanguage} aria-label="Toggle language" className="relative group hover:bg-slate-100 rounded-full h-10 w-10">
+            <Globe className="h-5 w-5 text-slate-600 group-hover:text-primary-600 transition-colors" />
+            <span className="absolute -bottom-1 -right-1 text-[10px] font-bold bg-white text-primary-700 rounded-full px-1.5 shadow-sm border border-slate-200">
               {language === 'en' ? 'EN' : 'বাং'}
             </span>
           </Button>
 
           <Button variant="ghost" size="icon" className="md:hidden">
-            <Menu className="h-5 w-5" />
+            <Menu className="h-6 w-6 text-slate-700" />
           </Button>
         </div>
       </div>
