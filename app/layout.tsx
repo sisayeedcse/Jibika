@@ -19,7 +19,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${inter.variable} ${notoSansBengali.variable} font-sans antialiased min-h-screen bg-slate-50 text-slate-900`}>
+      <body suppressHydrationWarning className={`${inter.variable} ${notoSansBengali.variable} font-sans antialiased min-h-screen bg-slate-50 text-slate-900`}>
         <I18nProvider>
           <div className="relative flex min-h-screen flex-col">
             <Header />
