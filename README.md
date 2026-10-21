@@ -1,55 +1,59 @@
-# JIBIKA 
-**AI-Powered FinTech for Inclusive Livelihood & Productive Asset Financing**
+<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
 
-> *From Small Capital to Productive Livelihood*
+<p align="center">
+<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
+<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
+<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
+<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
+</p>
 
-## About JIBIKA
+## About Laravel
 
-JIBIKA is an innovative, AI-enhanced FinTech platform designed to connect verified livelihood needs with small-scale capital. Rather than just offering traditional micro-loans or unmonitored cash, JIBIKA focuses on **Productive Asset Financing**. The platform ensures that capital is directly linked to tangible assets (such as machinery, tools, or vehicles) that empower individuals to generate a sustainable income.
+Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
 
-Built with a focus on trust, transparency, and actionable intelligence, JIBIKA leverages community-driven verification and Artificial Intelligence to orchestrate a transparent funding and procurement lifecycle. 
+- [Simple, fast routing engine](https://laravel.com/docs/routing).
+- [Powerful dependency injection container](https://laravel.com/docs/container).
+- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
+- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
+- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
+- [Robust background job processing](https://laravel.com/docs/queues).
+- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
 
-## The Core Philosophy
+Laravel is accessible, powerful, and provides tools required for large, robust applications.
 
-The ecosystem is built upon five foundational pillars:
+## Learning Laravel
 
-1. **Asset-First Approach**: Capital is always connected to a productive, income-generating asset.
-2. **Trust-First Verification**: Human trust is established through Community (Somitte) verification before any AI assessment or funding occurs.
-3. **Transparency-First Lifecycle**: Every stage of the funding, procurement, and delivery process is fully visible to all stakeholders.
-4. **AI-Assisted Decisions**: Artificial Intelligence enhances human decision-making by evaluating suitability, optimizing asset choices, and smart-matching contributors to causes—without replacing the human element.
-5. **Outcome-Oriented Tracking**: The system doesn't stop at funding; it follows the asset through procurement, delivery, and post-delivery monitoring to ensure it drives real-world outcomes.
+Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
 
-## How It Works: The Asset Request Lifecycle
+If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
 
-Everything in JIBIKA revolves around the **Asset Request**, which travels through a rigorous, transparent lifecycle:
+## Laravel Sponsors
 
-1. **Requested**: A Worker submits a need for a specific productive asset.
-2. **Verified**: The local Community/Somitte reviews and authenticates the request.
-3. **AI Assessed**: The AI evaluates the request's viability, local market demand, and the worker's experience to provide a suitability score.
-4. **Funding**: Contributors discover the verified and AI-backed request and pledge capital.
-5. **Funded**: The funding pool reaches 100% of the asset's cost.
-6. **Procured**: The system engages approved Vendors to source the requested asset.
-7. **Delivered**: The asset is physically handed over to the Worker.
-8. **Monitoring**: The asset's usage and the Worker's livelihood outcomes are tracked, feeding data back into the AI to improve future assessments.
+We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
 
-## The Ecosystem Roles
+### Premium Partners
 
-A thriving marketplace of five distinct roles makes JIBIKA work:
+- **[Vehikl](https://vehikl.com)**
+- **[Tighten Co.](https://tighten.co)**
+- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
+- **[64 Robots](https://64robots.com)**
+- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
+- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
+- **[Redberry](https://redberry.international/laravel-development)**
+- **[Active Logic](https://activelogic.com)**
 
-- **Worker**: The end-user who creates a profile, requests a productive asset, and tracks the lifecycle of their request.
-- **Community (Somitte)**: The localized trust layer responsible for reviewing and approving pending verification requests from Workers.
-- **Contributor**: The capital provider who browses smart-matched opportunities, simulates funding, and manages a portfolio of supported livelihoods.
-- **Vendor**: The procurement partner responsible for fulfilling the verified and funded asset orders.
-- **Admin**: The system orchestrator who manages workflows, assigns vendors, oversees deliveries, and monitors overall system health.
+## Contributing
 
-## The AI Intelligence Layer
+Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
 
-JIBIKA utilizes AI not as a black box, but as a transparent assistant to optimize capital allocation:
+## Code of Conduct
 
-- **Viability Assessment**: Evaluates the requested asset's suitability based on the worker's occupation, experience, location, cost, and regional demand.
-- **Asset Optimization**: Compares requested assets against better alternatives (e.g., suggesting a more efficient Industrial Sewing Machine instead of a basic model) to maximize the worker's productivity.
-- **Smart Matching**: Connects Contributors to the most relevant opportunities based on their preferences, past funding history, and the AI's impact scoring.
-- **Transparent Explanations**: Provides a clear, human-readable "Why?" for every recommendation to ensure AI safety and build trust.
+In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
 
----
-*Note: This project is currently in the MVP phase, developed for the Innovation Fair 2026. It is designed as an interactive demonstration using simulated data to showcase the workflow, AI integration, and core concepts of asset-backed livelihood financing.*
+## Security Vulnerabilities
+
+If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+
+## License
+
+The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
