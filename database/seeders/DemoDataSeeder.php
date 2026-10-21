@@ -20,21 +20,25 @@ class DemoDataSeeder extends Seeder
         ]);
 
         // Demo worker: Rahim
-        $rahim = User::create([
-            'name' => 'Rahim Uddin',
-            'email' => 'rahim@demo.local',
-            'password' => bcrypt('password'),
-            'role' => 'worker',
-            'status' => 'active',
-        ]);
-        WorkerProfile::create([
-            'user_id' => $rahim->id,
-            'occupation' => 'Tailor',
-            'experience_years' => 8,
-            'location' => 'Chattogram',
-            'bio' => 'Experienced tailor seeking productive asset.',
-            'verified' => true,
-        ]);
+        $rahim = User::firstOrCreate(
+            ['email' => 'rahim@demo.local'],
+            [
+                'name' => 'Rahim Uddin',
+                'password' => bcrypt('password'),
+                'role' => 'worker',
+                'status' => 'active',
+            ]
+        );
+        if (!WorkerProfile::where('user_id', $rahim->id)->exists()) {
+            WorkerProfile::create([
+                'user_id' => $rahim->id,
+                'occupation' => 'Tailor',
+                'experience_years' => 8,
+                'location' => 'Chattogram',
+                'bio' => 'Experienced tailor seeking productive asset.',
+                'verified' => true,
+            ]);
+        }
 
         // Demo request
         $request = AssetRequest::create([

@@ -19,5 +19,5 @@ class AssetRequest extends Model
     public function assessment() { return $this->belongsTo(AssessmentRecord::class, 'assessment_id'); }
     public function fundingPool() { return $this->belongsTo(FundingPool::class, 'funding_pool_id'); }
     public function procurementOrder() { return $this->belongsTo(ProcurementOrder::class, 'procurement_order_id'); }
-    public function documents() { return $this->hasMany(AssetRequestDocument::class, 'request_id'); }
+    public function monitoringRecords() { return $this->hasMany(MonitoringRecord::class, 'request_id'); }
 }
