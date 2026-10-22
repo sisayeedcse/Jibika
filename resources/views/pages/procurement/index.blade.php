@@ -45,12 +45,19 @@
                   @php
                     $delStatus = $order->delivery?->status ?? 'pending';
                   @endphp
-                  <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[0.65rem] font-bold uppercase tracking-wider border
-                    {{ $delStatus === 'delivered' ? 'bg-emerald-50 text-[#127A4A] border-emerald-200' :
-                      ($delStatus === 'disputed' ? 'bg-red-50 text-[#E05D44] border-red-200' : 'bg-amber-50 text-amber-700 border-amber-200') }}">
-                    <span class="w-1.5 h-1.5 rounded-full {{ $delStatus === 'delivered' ? 'bg-[#127A4A]' : ($delStatus === 'disputed' ? 'bg-[#E05D44]' : 'bg-amber-500') }}"></span>
-                    {{ $delStatus }}
-                  </span>
+                  @if($order->quotation && $order->quotation->status === 'pending')
+                    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[0.65rem] font-bold uppercase tracking-wider border bg-amber-50 text-amber-700 border-amber-200">
+                      <span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
+                      Quotation Pending
+                    </span>
+                  @else
+                    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[0.65rem] font-bold uppercase tracking-wider border
+                      {{ $delStatus === 'delivered' ? 'bg-emerald-50 text-[#127A4A] border-emerald-200' :
+                        ($delStatus === 'disputed' ? 'bg-red-50 text-[#E05D44] border-red-200' : 'bg-slate-50 text-slate-700 border-slate-200') }}">
+                      <span class="w-1.5 h-1.5 rounded-full {{ $delStatus === 'delivered' ? 'bg-[#127A4A]' : ($delStatus === 'disputed' ? 'bg-[#E05D44]' : 'bg-slate-400') }}"></span>
+                      {{ $delStatus }}
+                    </span>
+                  @endif
                 </td>
                 <td class="px-6 py-4 text-right">
                   <div class="flex items-center justify-end gap-2">
@@ -59,15 +66,26 @@
                     @endif
 
                     @if(auth()->user()->isAdmin() || auth()->id() === $order->vendor_id || auth()->id() === $order->request->worker_id)
-                      @if(!$order->delivery || $order->delivery->status === 'pending')
-                        <form action="{{ route('procurement.confirm', $order) }}" method="POST" class="inline-flex items-center gap-1.5">
+                      @if($order->quotation && $order->quotation->status === 'pending' && auth()->user()->isAdmin())
+                        <form action="{{ route('admin.quotations.select', $order->quotation) }}" method="POST" class="inline">
                           @csrf
-                          <input type="hidden" name="status" value="delivered">
-                          <input type="hidden" name="evidence_image_path" value="deliveries/handover_{{ $order->id }}.jpg">
-                          <button type="submit" class="px-3 py-1.5 rounded-lg bg-[#127A4A] text-white text-xs font-semibold hover:bg-[#0e5a36] transition-colors shadow-sm">
-                            Confirm Delivery
+                          <button type="submit" class="px-3 py-1.5 rounded-lg bg-[#0d9488] text-white text-xs font-semibold hover:bg-[#0f766e] transition-colors shadow-sm">
+                            Select Quotation
                           </button>
                         </form>
+                      @endif
+
+                      @if(!$order->quotation || $order->quotation->status === 'selected')
+                        @if(!$order->delivery || $order->delivery->status === 'pending')
+                          <form action="{{ route('procurement.confirm', $order) }}" method="POST" class="inline-flex items-center gap-1.5">
+                            @csrf
+                            <input type="hidden" name="status" value="delivered">
+                            <input type="hidden" name="evidence_image_path" value="deliveries/handover_{{ $order->id }}.jpg">
+                            <button type="submit" class="px-3 py-1.5 rounded-lg bg-[#127A4A] text-white text-xs font-semibold hover:bg-[#0e5a36] transition-colors shadow-sm">
+                              Confirm Delivery
+                            </button>
+                          </form>
+                        @endif
                       @endif
 
                       @if($order->delivery && $order->delivery->status === 'delivered')

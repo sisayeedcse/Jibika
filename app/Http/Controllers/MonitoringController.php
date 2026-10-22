@@ -27,9 +27,9 @@ class MonitoringController extends Controller
             abort(403, 'You may not add monitoring records for this request.');
         }
 
-        $allowedStatuses = ['procured', 'delivered', 'monitoring', 'completed'];
+        $allowedStatuses = ['delivered', 'monitoring', 'completed'];
         if (!in_array($request->status, $allowedStatuses, true)) {
-            return back()->withErrors(['status' => 'Monitoring records can only be recorded after asset delivery.']);
+            return back()->withErrors(['status' => 'Monitoring records can only be recorded after confirmed physical delivery of the asset.']);
         }
 
         $validated = $httpRequest->validate([

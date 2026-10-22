@@ -6,6 +6,11 @@ use App\Models\VendorQuotation;
 
 class VendorQuotationPolicy
 {
+    public function viewAny(User $user): bool
+    {
+        return $user->isVendor() || $user->isAdmin();
+    }
+
     public function view(User $user, VendorQuotation $quotation): bool
     {
         return $user->id === $quotation->vendor_id || $user->isAdmin();

@@ -16,40 +16,54 @@
     <div class="lg:col-span-2 space-y-6">
       <!-- Add Record Section -->
       @if(auth()->user()->isAdmin() || auth()->id() === $request->worker_id)
-        <section class="bg-white rounded-2xl shadow-card border border-[#f1f5f9] p-7 md:p-8" aria-label="Add monitoring record">
-          <div class="flex items-center gap-3 mb-5">
-            <div class="w-8 h-8 rounded-xl bg-[#127A4A]/10 text-[#127A4A] flex items-center justify-center font-bold text-sm">
-              +
-            </div>
-            <div>
-              <h2 class="text-base font-extrabold tracking-tight text-[#0f172a]">Record Productivity Milestone</h2>
-              <p class="text-xs text-[#475569]">Enter actual verified household or enterprise metrics.</p>
-            </div>
-          </div>
-
-          <form action="{{ route('monitoring.store', $request) }}" method="POST" class="space-y-4" aria-label="Monitoring record form">
-            @csrf
-            <div class="grid sm:grid-cols-2 gap-4">
-              <div>
-                <label for="metric_name" class="block text-xs font-semibold uppercase tracking-wider text-[#94a3b8] mb-1.5">Metric Name</label>
-                <input id="metric_name" type="text" name="metric_name" placeholder="e.g. Monthly Revenue, Daily Output" class="w-full px-4 py-3 rounded-xl border border-[#e2e8f0] text-sm focus-ring bg-[#f8fafc] focus:bg-white transition-colors" required aria-required="true">
+        @if(in_array($request->status, ['delivered', 'monitoring', 'completed'], true))
+          <section class="bg-white rounded-2xl shadow-card border border-[#f1f5f9] p-7 md:p-8" aria-label="Add monitoring record">
+            <div class="flex items-center gap-3 mb-5">
+              <div class="w-8 h-8 rounded-xl bg-[#127A4A]/10 text-[#127A4A] flex items-center justify-center font-bold text-sm">
+                +
               </div>
               <div>
-                <label for="metric_value" class="block text-xs font-semibold uppercase tracking-wider text-[#94a3b8] mb-1.5">Metric Value</label>
-                <input id="metric_value" type="text" name="metric_value" placeholder="e.g. BDT 18,500 / month, 12 shirts/day" class="w-full px-4 py-3 rounded-xl border border-[#e2e8f0] text-sm focus-ring bg-[#f8fafc] focus:bg-white transition-colors" required aria-required="true">
+                <h2 class="text-base font-extrabold tracking-tight text-[#0f172a]">Record Productivity Milestone</h2>
+                <p class="text-xs text-[#475569]">Enter actual verified household or enterprise metrics.</p>
               </div>
             </div>
 
-            <div>
-              <label for="notes" class="block text-xs font-semibold uppercase tracking-wider text-[#94a3b8] mb-1.5">Observational Notes (Optional)</label>
-              <textarea id="notes" name="notes" rows="2" placeholder="e.g. Sewing speed increased; took on 2 additional bulk orders from local school." class="w-full px-4 py-3 rounded-xl border border-[#e2e8f0] text-sm focus-ring bg-[#f8fafc] focus:bg-white transition-colors resize-y"></textarea>
-            </div>
+            <form action="{{ route('monitoring.store', $request) }}" method="POST" class="space-y-4" aria-label="Monitoring record form">
+              @csrf
+              <div class="grid sm:grid-cols-2 gap-4">
+                <div>
+                  <label for="metric_name" class="block text-xs font-semibold uppercase tracking-wider text-[#94a3b8] mb-1.5">Metric Name</label>
+                  <input id="metric_name" type="text" name="metric_name" placeholder="e.g. Monthly Revenue, Daily Output" class="w-full px-4 py-3 rounded-xl border border-[#e2e8f0] text-sm focus-ring bg-[#f8fafc] focus:bg-white transition-colors" required aria-required="true">
+                </div>
+                <div>
+                  <label for="metric_value" class="block text-xs font-semibold uppercase tracking-wider text-[#94a3b8] mb-1.5">Metric Value</label>
+                  <input id="metric_value" type="text" name="metric_value" placeholder="e.g. BDT 18,500 / month, 12 shirts/day" class="w-full px-4 py-3 rounded-xl border border-[#e2e8f0] text-sm focus-ring bg-[#f8fafc] focus:bg-white transition-colors" required aria-required="true">
+                </div>
+              </div>
 
-            <button type="submit" class="inline-flex items-center px-6 py-2.5 rounded-xl bg-[#127A4A] text-white text-xs font-semibold hover:bg-[#0e5a36] transition-colors shadow-md shadow-emerald-900/10">
-              Save Monitoring Record
-            </button>
-          </form>
-        </section>
+              <div>
+                <label for="notes" class="block text-xs font-semibold uppercase tracking-wider text-[#94a3b8] mb-1.5">Observational Notes (Optional)</label>
+                <textarea id="notes" name="notes" rows="2" placeholder="e.g. Sewing speed increased; took on 2 additional bulk orders from local school." class="w-full px-4 py-3 rounded-xl border border-[#e2e8f0] text-sm focus-ring bg-[#f8fafc] focus:bg-white transition-colors resize-y"></textarea>
+              </div>
+
+              <button type="submit" class="inline-flex items-center px-6 py-2.5 rounded-xl bg-[#127A4A] text-white text-xs font-semibold hover:bg-[#0e5a36] transition-colors shadow-md shadow-emerald-900/10">
+                Save Monitoring Record
+              </button>
+            </form>
+          </section>
+        @else
+          <section class="bg-amber-50/60 rounded-2xl border border-amber-200 p-6 md:p-7" aria-label="Delivery pending notice">
+            <div class="flex items-start gap-3">
+              <span class="text-amber-600 text-lg font-bold" aria-hidden="true">&#9888;</span>
+              <div>
+                <h3 class="text-sm font-bold text-[#0f172a] mb-1">Post-Delivery Milestone Form Locked</h3>
+                <p class="text-xs text-[#475569] leading-relaxed">
+                  Post-delivery impact monitoring is only activated once the asset has been physically delivered and confirmed by the recipient or vendor. Current request status: <span class="font-mono font-bold text-amber-800">{{ strtoupper(str_replace('_', ' ', $request->status)) }}</span>.
+                </p>
+              </div>
+            </div>
+          </section>
+        @endif
       @endif
 
       <!-- Monitoring History Section -->

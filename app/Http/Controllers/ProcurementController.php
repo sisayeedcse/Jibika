@@ -31,7 +31,7 @@ class ProcurementController extends Controller
             'evidence_image_path' => ['nullable','string','max:500'],
         ]);
 
-        $order->status = 'procured';
+        $order->status = $validated['status'] === 'disputed' ? 'pending' : 'procured';
         $order->save();
 
         Delivery::updateOrCreate(
@@ -106,15 +106,44 @@ class ProcurementController extends Controller
             }
 
             AuditLog::create([
-                'user_id'    => $user->id,
-                'action'     => 'resolve_delivery_dispute',
-                'model_type' => 'procurement_order',
-                'model_id'   => $order->id,
-                'new_state'  => [
-                    'resolution' => $validated['resolution'],
-                    'notes'      => $validated['notes'],
+                'user_id'        => $user->id,
+                'action'         => 'resolve_delivery_dispute',
+                'model_type'     => 'procurement_order',
+                'model_id'       => $order->id,
+                'previous_state' => [
+                    'order_status'    => $order->getOriginal('status'),
+                    'delivery_status' => 'disputed',
+                    'request_status'  => 'delivery_disputed',
+                ],
+                'new_state'      => [
+                    'resolution'     => $validated['resolution'],
+                    'notes'          => $validated['notes'],
+                    'order_status'   => $order->status,
+                    'request_status' => $order->request?->status,
                 ],
             ]);
+
+            // Notify worker
+            if ($order->request && $order->request->worker_id) {
+                $statusMsg = match ($validated['resolution']) {
+                    'confirm_delivered'  => 'Delivery confirmed after dispute mediation.',
+                    'mark_failed'        => 'Procurement failed due to delivery failure.',
+                    'reopen_procurement' => 'Delivery dispute resolved: supplier requested to re-dispatch.',
+                };
+                $statusMsgBn = match ($validated['resolution']) {
+                    'confirm_delivered'  => 'বিরোধ নিষ্পত্তির পর সরবরাহ নিশ্চিত করা হয়েছে।',
+                    'mark_failed'        => 'সরবরাহ ব্যর্থতার কারণে সংগ্রহ বাতিল করা হয়েছে।',
+                    'reopen_procurement' => 'বিরোধ নিষ্পত্তির পর পুনরায় সরবরাহের নির্দেশ দেওয়া হয়েছে।',
+                };
+                \App\Models\Notification::create([
+                    'user_id'  => $order->request->worker_id,
+                    'type'     => 'dispute_resolved',
+                    'title'    => 'Delivery Dispute Resolved',
+                    'title_bn' => 'সরবরাহ বিরোধ নিষ্পত্তি',
+                    'body_en'  => $statusMsg . ' Notes: ' . $validated['notes'],
+                    'body_bn'  => $statusMsgBn,
+                ]);
+            }
         });
 
         return redirect()->route('procurement.index')->with('success', 'Dispute resolved successfully.');

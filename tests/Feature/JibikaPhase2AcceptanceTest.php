@@ -147,6 +147,13 @@ class JibikaPhase2AcceptanceTest extends TestCase
         $worker = User::factory()->create(['role' => 'worker']);
         $vendor = User::factory()->create(['role' => 'vendor']);
 
+        // Vendor workspace policy check (viewAny)
+        $this->actingAs($worker);
+        $this->get('/vendor')->assertForbidden();
+
+        $this->actingAs($vendor);
+        $this->get('/vendor')->assertOk();
+
         $unfundedRequest = AssetRequest::create([
             'worker_id' => $worker->id,
             'status' => 'draft',
@@ -256,6 +263,7 @@ class JibikaPhase2AcceptanceTest extends TestCase
         $disputeResponse->assertRedirect('/procurement');
         $this->assertEquals('delivery_disputed', $request->fresh()->status);
         $this->assertEquals('disputed', $order->fresh()->delivery->status);
+        $this->assertEquals('pending', $order->fresh()->status);
 
         // Worker cannot resolve the dispute (admin only)
         $unauthorizedResolve = $this->postWithCsrf("/procurement/{$order->id}/resolve-dispute", [
@@ -424,6 +432,22 @@ class JibikaPhase2AcceptanceTest extends TestCase
         ]);
         $failResponse->assertSessionHasErrors(['status']);
 
+        // Attempting monitoring on 'procured' (procured but not yet physically delivered) MUST ALSO FAIL
+        $draftRequest->update(['status' => 'procured']);
+        $failProcured = $this->postWithCsrf("/requests/{$draftRequest->id}/monitoring", [
+            'metric_name' => 'Weekly Output',
+            'metric_value' => '5 garments',
+        ]);
+        $failProcured->assertSessionHasErrors(['status']);
+
+        // Attempting monitoring on 'procurement' MUST ALSO FAIL
+        $draftRequest->update(['status' => 'procurement']);
+        $failProcurement = $this->postWithCsrf("/requests/{$draftRequest->id}/monitoring", [
+            'metric_name' => 'Weekly Output',
+            'metric_value' => '5 garments',
+        ]);
+        $failProcurement->assertSessionHasErrors(['status']);
+
         // On delivered request, other worker cannot submit monitoring (403)
         $draftRequest->update(['status' => 'delivered']);
         $this->actingAs($otherWorker);
@@ -433,7 +457,7 @@ class JibikaPhase2AcceptanceTest extends TestCase
         ]);
         $forbiddenResponse->assertForbidden();
 
-        // Owning worker submits monitoring: succeeds and transitions to 'monitoring'
+        // Owning worker submits monitoring on 'delivered': succeeds and transitions to 'monitoring'
         $this->actingAs($worker);
         $successResponse = $this->postWithCsrf("/requests/{$draftRequest->id}/monitoring", [
             'metric_name' => 'Monthly Income',
@@ -445,6 +469,15 @@ class JibikaPhase2AcceptanceTest extends TestCase
             'request_id' => $draftRequest->id,
             'metric_name' => 'Monthly Income',
         ]);
+        $this->assertEquals('monitoring', $draftRequest->fresh()->status);
+
+        // Subsequent monitoring record on request in 'monitoring' status succeeds and stays 'monitoring'
+        $secondSuccess = $this->postWithCsrf("/requests/{$draftRequest->id}/monitoring", [
+            'metric_name' => 'Additional Metric',
+            'metric_value' => '20 units/week',
+            'notes' => 'Follow up visit.',
+        ]);
+        $secondSuccess->assertRedirect();
         $this->assertEquals('monitoring', $draftRequest->fresh()->status);
     }
 
