@@ -10,6 +10,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Noto+Sans+Bengali:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{{ asset('css/design-system.css') }}">
 <style>
   body { font-family: 'Inter','Noto Sans Bengali',system-ui,sans-serif; }
   .font-brand { font-family: 'Inter','Noto Sans Bengali',system-ui,sans-serif; }
@@ -35,7 +36,7 @@
   <nav class="bg-white/85 backdrop-blur-xl border-b border-subtle sticky top-0 z-50" aria-label="Primary navigation">
     <div class="max-w-6xl mx-auto px-6 lg:px-8">
       <div class="flex items-center justify-between h-[68px]">
-        <a href="{{ url('/') }}" class="text-[1.35rem] font-extrabold tracking-tight text-[#127A4A] leading-none" aria-label="JIBIKA Home">JIBIKA</a>
+        <a href="{{ url('/') }}" class="text-[1.35rem] font-extrabold tracking-[0.02em] text-[#127A4A] leading-none" aria-label="JIBIKA Home">JIBIKA</a>
         <div class="hidden md:flex items-center gap-7 text-[0.88rem] font-medium text-secondary">
           <a href="{{ url('/') }}" class="hover:text-[#127A4A] transition-colors">Home</a>
           <a href="{{ route('how-it-works') }}" class="hover:text-[#127A4A] transition-colors">How It Works</a>
@@ -109,7 +110,7 @@
     <div class="max-w-6xl mx-auto px-6 lg:px-8 py-8 md:py-10">
       <div class="flex flex-col md:flex-row md:items-end md:justify-between gap-6">
         <div>
-          <a href="{{ url('/') }}" class="text-xl font-extrabold tracking-tight text-[#127A4A]">JIBIKA</a>
+          <a href="{{ url('/') }}" class="text-xl font-extrabold tracking-[0.02em] text-[#127A4A]">JIBIKA</a>
           <p class="text-sm text-secondary mt-2 max-w-md leading-relaxed">A productive asset financing platform connecting verified livelihood needs with community-backed funding coordination.</p>
         </div>
         <div class="flex gap-6 text-sm text-secondary">

@@ -27,7 +27,7 @@
     <div class="max-w-6xl mx-auto px-6 lg:px-8">
       <div class="flex items-center justify-between h-[68px]">
         <div class="flex items-center gap-3">
-          <a href="/" class="text-[1.4rem] font-black tracking-tight text-[#127A4A]" aria-label="JIBIKA Home">JIBIKA</a>
+          <a href="/" class="text-[1.4rem] font-black tracking-[0.02em] text-[#127A4A]" aria-label="JIBIKA Home">JIBIKA</a>
           <span class="text-xs px-2 py-0.5 rounded-full bg-emerald-50 text-[#127A4A] font-bold border border-emerald-200">জীবিকা</span>
         </div>
         <div class="hidden md:flex items-center gap-7 text-[0.88rem] font-medium text-[#475569]">
