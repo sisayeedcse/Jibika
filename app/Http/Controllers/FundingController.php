@@ -17,10 +17,10 @@ class FundingController extends Controller
 
     public function contribute(Request $request, FundingPool $pool)
     {
-        $request->validate([
+        $validated = $request->validate([
             'amount_bdt' => ['required','numeric','min:100'],
         ]);
-        $validatedAmount = $request->validated('amount_bdt');
+        $validatedAmount = $validated['amount_bdt'];
         $pool->increment('current_amount_bdt', $validatedAmount);
         if ($pool->current_amount_bdt >= $pool->target_amount_bdt) {
             $pool->status = 'completed';

@@ -129,6 +129,7 @@ return new class extends Migration
             $table->boolean('is_confirmed_transaction')->default(false);
             $table->boolean('is_demo')->default(false);
             $table->timestamp('pledged_at')->useCurrent();
+            $table->timestamps();
         });
 
         Schema::create('vendor_quotations', function (Blueprint $table) {

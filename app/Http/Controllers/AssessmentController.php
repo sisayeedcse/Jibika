@@ -17,7 +17,7 @@ class AssessmentController extends Controller
 
     public function trigger(AssetRequest $request, AIService $ai)
     {
-        $this->authorize('update', $request);
+        $this->authorize('assess', $request);
         if ($request->status !== 'verified') {
             return back()->withErrors(['status' => 'Request must be verified before AI assessment.']);
         }
