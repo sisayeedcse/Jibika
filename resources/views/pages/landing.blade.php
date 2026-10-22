@@ -23,7 +23,7 @@
   <nav class="bg-white/85 backdrop-blur-xl border-b border-[#e2e8f0] sticky top-0 z-50" aria-label="Primary navigation">
     <div class="max-w-6xl mx-auto px-6 lg:px-8">
       <div class="flex items-center justify-between h-[68px]">
-        <a href="/" class="text-[1.35rem] font-extrabold tracking-tight text-[#127A4A]" aria-label="JIBIKA Home">JIBIKA</a>
+        <a href="/" class="text-[1.35rem] font-extrabold tracking-[0.02em] text-[#127A4A]" aria-label="JIBIKA Home">JIBIKA</a>
         <div class="hidden md:flex items-center gap-7 text-[0.88rem] font-medium text-[#475569]">
           <a href="/" class="hover:text-[#127A4A] transition-colors">Home</a>
           <a href="{{ route('how-it-works') }}" class="hover:text-[#127A4A] transition-colors">How It Works</a>
