@@ -77,7 +77,24 @@ class AssetRequestController extends Controller
             'reason' => ['required','string','max:2000'],
             'livelihood_justification' => ['required','string','max:2000'],
         ]);
+        $previous = [
+            'requested_amount_bdt'     => (string) $request->requested_amount_bdt,
+            'reason'                   => $request->reason,
+            'livelihood_justification' => $request->livelihood_justification,
+        ];
         $request->update($data);
+        AuditLog::create([
+            'user_id'        => auth()->id(),
+            'action'         => 'update_draft_request',
+            'model_type'     => 'asset_request',
+            'model_id'       => $request->id,
+            'previous_state' => $previous,
+            'new_state'      => [
+                'requested_amount_bdt'     => (string) $request->requested_amount_bdt,
+                'reason'                   => $request->reason,
+                'livelihood_justification' => $request->livelihood_justification,
+            ],
+        ]);
         return redirect()->route('requests.show', $request)->with('success', 'Request updated.');
     }
 

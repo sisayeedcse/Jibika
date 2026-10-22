@@ -23,8 +23,8 @@ class VendorController extends Controller
     {
         $this->authorize('create', VendorQuotation::class);
 
-        if ($opportunity->status !== 'funded') {
-            return back()->withErrors(['quoted_amount_bdt' => 'Quotations can only be submitted for funded requests.']);
+        if ($opportunity->status !== 'funded' || $opportunity->procurement_order_id !== null) {
+            return back()->withErrors(['quoted_amount_bdt' => 'Quotations can only be submitted for funded requests awaiting supplier selection.']);
         }
 
         $validated = $request->validate([

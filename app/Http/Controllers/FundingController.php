@@ -81,49 +81,58 @@ class FundingController extends Controller
         ]);
         $validatedAmount = (float) $validated['amount_bdt'];
 
-        $remaining = max(0, (float) $pool->target_amount_bdt - (float) $pool->current_amount_bdt);
-        if ($validatedAmount > $remaining) {
-            return back()->withErrors([
-                'amount_bdt' => 'Pledge of BDT ' . number_format($validatedAmount, 0) . ' exceeds remaining needed amount of BDT ' . number_format($remaining, 0) . '.'
-            ]);
-        }
-
-        // Use DB transaction to keep pool total consistent
-        \Illuminate\Support\Facades\DB::transaction(function () use ($pool, $validatedAmount, $user) {
-            $pool->increment('current_amount_bdt', $validatedAmount);
-            $pool->refresh();
-
-            if ($pool->current_amount_bdt >= $pool->target_amount_bdt) {
-                $pool->update(['status' => 'completed']);
-                if ($pool->request) {
-                    $pool->request->update(['status' => 'funded']);
-                    Notification::create([
-                        'user_id'  => $pool->request->worker_id,
-                        'type'     => 'funding_completed',
-                        'title'    => 'Funding Goal Reached',
-                        'title_bn' => 'তহবিল লক্ষ্যমাত্রা অর্জিত হয়েছে',
-                        'body_en'  => 'Your asset request #' . $pool->request->id . ' has reached 100% funding and is ready for vendor quotations.',
-                        'body_bn'  => 'আপনার সম্পদ অনুরোধ #' . $pool->request->id . ' ১০০% অর্থায়ন পেয়েছে।',
-                    ]);
+        try {
+            \Illuminate\Support\Facades\DB::transaction(function () use ($pool, $validatedAmount, $user) {
+                // Lock pool for update to prevent concurrent race condition overfunding
+                $lockedPool = FundingPool::where('id', $pool->id)->lockForUpdate()->first();
+                if (!$lockedPool || $lockedPool->status !== 'open') {
+                    throw new \InvalidArgumentException('This funding pool is closed and no longer accepting pledges.');
                 }
-            }
 
-            ContributionOrPledge::create([
-                'pool_id'                  => $pool->id,
-                'contributor_id'           => $user->id,
-                'amount_bdt'               => $validatedAmount,
-                'is_demo'                  => true,
-                'is_confirmed_transaction' => false,
-            ]);
+                $remaining = max(0, (float) $lockedPool->target_amount_bdt - (float) $lockedPool->current_amount_bdt);
+                if ($validatedAmount > $remaining) {
+                    throw new \InvalidArgumentException('Pledge of BDT ' . number_format($validatedAmount, 0) . ' exceeds remaining needed amount of BDT ' . number_format($remaining, 0) . '.');
+                }
 
-            AuditLog::create([
-                'user_id'    => $user->id,
-                'action'     => 'contribute_funding',
-                'model_type' => 'funding_pool',
-                'model_id'   => $pool->id,
-                'new_state'  => ['current_amount' => (string) $pool->current_amount_bdt],
-            ]);
-        });
+                $previousAmount = $lockedPool->current_amount_bdt;
+                $lockedPool->increment('current_amount_bdt', $validatedAmount);
+                $lockedPool->refresh();
+
+                if ($lockedPool->current_amount_bdt >= $lockedPool->target_amount_bdt) {
+                    $lockedPool->update(['status' => 'completed']);
+                    if ($lockedPool->request) {
+                        $lockedPool->request->update(['status' => 'funded']);
+                        Notification::create([
+                            'user_id'  => $lockedPool->request->worker_id,
+                            'type'     => 'funding_completed',
+                            'title'    => 'Funding Goal Reached',
+                            'title_bn' => 'তহবিল লক্ষ্যমাত্রা অর্জিত হয়েছে',
+                            'body_en'  => 'Your asset request #' . $lockedPool->request->id . ' has reached 100% funding and is ready for vendor quotations.',
+                            'body_bn'  => 'আপনার সম্পদ অনুরোধ #' . $lockedPool->request->id . ' ১০০% অর্থায়ন পেয়েছে।',
+                        ]);
+                    }
+                }
+
+                ContributionOrPledge::create([
+                    'pool_id'                  => $lockedPool->id,
+                    'contributor_id'           => $user->id,
+                    'amount_bdt'               => $validatedAmount,
+                    'is_demo'                  => true,
+                    'is_confirmed_transaction' => false,
+                ]);
+
+                AuditLog::create([
+                    'user_id'        => $user->id,
+                    'action'         => 'contribute_funding',
+                    'model_type'     => 'funding_pool',
+                    'model_id'       => $lockedPool->id,
+                    'previous_state' => ['current_amount' => (string) $previousAmount],
+                    'new_state'      => ['current_amount' => (string) $lockedPool->current_amount_bdt],
+                ]);
+            });
+        } catch (\InvalidArgumentException $e) {
+            return back()->withErrors(['amount_bdt' => $e->getMessage()]);
+        }
 
         return redirect()->route('funding.index')->with('success', 'Simulated pledge recorded. This is not a real payment.');
     }

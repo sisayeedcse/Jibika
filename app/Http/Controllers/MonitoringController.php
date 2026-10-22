@@ -2,6 +2,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\AssetRequest;
+use App\Models\AuditLog;
 use App\Models\MonitoringRecord;
 use Illuminate\Http\Request;
 
@@ -38,6 +39,8 @@ class MonitoringController extends Controller
             'notes'        => ['nullable','string','max:1000'],
         ]);
 
+        $previousStatus = $request->status;
+
         MonitoringRecord::create([
             'request_id'   => $request->id,
             'metric_name'  => $validated['metric_name'],
@@ -49,6 +52,19 @@ class MonitoringController extends Controller
         if ($request->status === 'delivered') {
             $request->update(['status' => 'monitoring']);
         }
+
+        AuditLog::create([
+            'user_id'        => auth()->id(),
+            'action'         => 'add_monitoring_record',
+            'model_type'     => 'asset_request',
+            'model_id'       => $request->id,
+            'previous_state' => ['status' => $previousStatus],
+            'new_state'      => [
+                'status'       => $request->status,
+                'metric_name'  => $validated['metric_name'],
+                'metric_value' => $validated['metric_value'],
+            ],
+        ]);
 
         return back()->with('success', 'Monitoring record added.');
     }

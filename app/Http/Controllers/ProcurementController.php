@@ -16,7 +16,11 @@ class ProcurementController extends Controller
         if ($user->isVendor()) {
             $query->where('vendor_id', $user->id);
         } elseif ($user->isWorker()) {
-            $query->whereHas('request', fn($q) => $q->where('worker_id', $user->id));
+            $query->whereHas('request', fn($q) => $q->where('worker_id', $user->id))
+                  ->where(function ($q) {
+                      $q->whereNull('quotation_id')
+                        ->orWhereHas('quotation', fn($sub) => $sub->where('status', 'selected'));
+                  });
         }
 
         $orders = $query->latest()->paginate(15);
@@ -26,10 +30,26 @@ class ProcurementController extends Controller
     public function confirmDelivery(Request $request, ProcurementOrder $order)
     {
         $this->authorize('update', $order);
+
+        if ($order->status === 'failed') {
+            return back()->withErrors(['status' => 'Cannot confirm delivery on a failed or cancelled procurement order.']);
+        }
+
+        if ($order->quotation && $order->quotation->status !== 'selected') {
+            return back()->withErrors(['status' => 'Delivery can only be confirmed after quotation approval.']);
+        }
+
+        if ($order->request && $order->request->procurement_order_id && $order->request->procurement_order_id !== $order->id) {
+            return back()->withErrors(['status' => 'This procurement order is not the active order for the asset request.']);
+        }
+
         $validated = $request->validate([
             'status' => ['required','in:delivered,disputed'],
             'evidence_image_path' => ['nullable','string','max:500'],
         ]);
+
+        $previousOrderStatus = $order->status;
+        $previousDeliveryStatus = $order->delivery?->status ?? 'pending';
 
         $order->status = $validated['status'] === 'disputed' ? 'pending' : 'procured';
         $order->save();
@@ -51,11 +71,12 @@ class ProcurementController extends Controller
         }
 
         AuditLog::create([
-            'user_id' => auth()->id(),
-            'action' => 'confirm_delivery',
-            'model_type' => 'procurement_order',
-            'model_id' => $order->id,
-            'new_state' => ['status' => $validated['status']],
+            'user_id'        => auth()->id(),
+            'action'         => 'confirm_delivery',
+            'model_type'     => 'procurement_order',
+            'model_id'       => $order->id,
+            'previous_state' => ['order_status' => $previousOrderStatus, 'delivery_status' => $previousDeliveryStatus],
+            'new_state'      => ['status' => $validated['status'], 'order_status' => $order->status],
         ]);
 
         return redirect()->route('procurement.index')->with('success', 'Delivery status updated.');
@@ -71,6 +92,10 @@ class ProcurementController extends Controller
         $delivery = $order->delivery;
         if (!$delivery || $delivery->status !== 'disputed') {
             return back()->withErrors(['status' => 'No active delivery dispute on this order.']);
+        }
+
+        if ($order->request && $order->request->procurement_order_id && $order->request->procurement_order_id !== $order->id) {
+            return back()->withErrors(['status' => 'This procurement order is not the active order for the asset request.']);
         }
 
         $validated = $request->validate([
