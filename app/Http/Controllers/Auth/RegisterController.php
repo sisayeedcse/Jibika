@@ -15,23 +15,36 @@ class RegisterController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'name' => ['required','string','max:255'],
-            'email' => ['required','string','email','max:255','unique:users'],
+            'name'     => ['required','string','max:255'],
+            'email'    => ['required','string','email','max:255','unique:users'],
             'password' => ['required','string','min:8','confirmed'],
-            'role' => ['sometimes','string','in:worker,contributor,vendor'],
+            'role'     => ['sometimes','string','in:worker,contributor,vendor'],
         ]);
 
-        $role = $validated['role'] ?? 'worker';
-        $user = User::create([
-            'name' => $validated['name'],
-            'email' => $validated['email'],
-            'password' => Hash::make($validated['password']),
-            'role' => $role,
-            'status' => 'active',
-        ]);
+        // Only worker, contributor, vendor allowed on public registration.
+        // admin and community are granted by administrators only.
+        $role = in_array($validated['role'] ?? 'worker', ['worker','contributor','vendor'])
+            ? ($validated['role'] ?? 'worker')
+            : 'worker';
+
+        // Use direct attribute assignment (role is not in $fillable to prevent mass-assignment)
+        $user = new User();
+        $user->name     = $validated['name'];
+        $user->email    = $validated['email'];
+        $user->password = Hash::make($validated['password']);
+        $user->role     = $role;
+        $user->status   = 'active';
+        $user->save();
 
         if ($role === 'worker') {
-            WorkerProfile::create(['user_id' => $user->id, 'occupation' => '', 'experience_years' => 0, 'location' => '', 'bio' => '', 'verified' => false]);
+            WorkerProfile::create([
+                'user_id'          => $user->id,
+                'occupation'       => '',
+                'experience_years' => 0,
+                'location'         => '',
+                'bio'              => '',
+                'verified'         => false,
+            ]);
         }
 
         Auth::login($user);

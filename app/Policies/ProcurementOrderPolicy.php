@@ -12,8 +12,11 @@ class ProcurementOrderPolicy
             || $user->id === $order->request->worker_id
             || $user->isAdmin();
     }
+
     public function update(User $user, ProcurementOrder $order): bool
     {
-        return $user->id === $order->vendor_id || $user->isAdmin();
+        return $user->id === $order->vendor_id
+            || $user->id === $order->request->worker_id
+            || $user->isAdmin();
     }
 }

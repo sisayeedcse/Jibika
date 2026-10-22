@@ -23,6 +23,7 @@ class AssetRequestController extends Controller
 
     public function create()
     {
+        $this->authorize('create', AssetRequest::class);
         $categories = AssetCategory::all();
         return view('pages.requests.create', compact('categories'));
     }
@@ -82,9 +83,13 @@ class AssetRequestController extends Controller
 
     public function submit(Request $httpRequest, AssetRequest $request)
     {
-        $this->authorize('update', $request);
+        // Check ownership first before status check to give correct 403 for non-owners
+        if (auth()->id() !== $request->worker_id) {
+            abort(403, 'You do not own this request.');
+        }
+        // Status check produces a validation-style error, not a 403
         if ($request->status !== 'draft') {
-            return back()->withErrors(['status' => 'Only drafts can be submitted.']);
+            return back()->withErrors(['status' => 'Only draft requests can be submitted.']);
         }
         $request->update(['status' => 'submitted']);
         AuditLog::create([
