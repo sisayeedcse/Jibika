@@ -21,10 +21,15 @@ class MonitoringController extends Controller
      */
     public function store(Request $httpRequest, AssetRequest $request)
     {
-        // The owning worker (any status after draft) and admins may add monitoring records.
+        // The owning worker and admins may add monitoring records.
         $user = auth()->user();
         if (!$user->isAdmin() && $user->id !== $request->worker_id) {
             abort(403, 'You may not add monitoring records for this request.');
+        }
+
+        $allowedStatuses = ['procured', 'delivered', 'monitoring', 'completed'];
+        if (!in_array($request->status, $allowedStatuses, true)) {
+            return back()->withErrors(['status' => 'Monitoring records can only be recorded after asset delivery.']);
         }
 
         $validated = $httpRequest->validate([
@@ -34,12 +39,16 @@ class MonitoringController extends Controller
         ]);
 
         MonitoringRecord::create([
-            'request_id'  => $request->id,
-            'metric_name' => $validated['metric_name'],
-            'metric_value'=> $validated['metric_value'],
-            'notes'       => $validated['notes'] ?? null,
-            'recorded_at' => now(),
+            'request_id'   => $request->id,
+            'metric_name'  => $validated['metric_name'],
+            'metric_value' => $validated['metric_value'],
+            'notes'        => $validated['notes'] ?? null,
+            'recorded_at'  => now(),
         ]);
+
+        if ($request->status === 'delivered') {
+            $request->update(['status' => 'monitoring']);
+        }
 
         return back()->with('success', 'Monitoring record added.');
     }

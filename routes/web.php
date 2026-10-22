@@ -49,6 +49,7 @@ Route::middleware(['auth','active'])->group(function () {
     Route::post('verification/{verification}/decide', [VerificationController::class, 'decide'])->name('verification.decide');
 
     Route::get('funding', [FundingController::class, 'index'])->name('funding.index');
+    Route::post('requests/{request}/open-funding', [FundingController::class, 'openPool'])->name('funding.open');
     Route::post('funding/{pool}/contribute', [FundingController::class, 'contribute'])->name('funding.contribute');
 
     Route::get('vendor', [VendorController::class, 'index'])->name('vendor.index');
@@ -56,6 +57,7 @@ Route::middleware(['auth','active'])->group(function () {
 
     Route::get('procurement', [ProcurementController::class, 'index'])->name('procurement.index');
     Route::post('procurement/{order}/confirm-delivery', [ProcurementController::class, 'confirmDelivery'])->name('procurement.confirm');
+    Route::post('procurement/{order}/resolve-dispute', [ProcurementController::class, 'resolveDispute'])->name('procurement.resolve-dispute');
 
     Route::get('requests/{request}/monitoring', [MonitoringController::class, 'index'])->name('monitoring.index');
     Route::post('requests/{request}/monitoring', [MonitoringController::class, 'store'])->name('monitoring.store');
@@ -70,5 +72,7 @@ Route::middleware(['auth','active'])->group(function () {
         Route::post('users/{user}/status', [AdminController::class, 'setStatus'])->name('users.status');
         Route::get('requests', [AdminController::class, 'requests'])->name('requests');
         Route::get('audit', [AdminController::class, 'audit'])->name('audit');
+        Route::post('quotations/{quotation}/select', [AdminController::class, 'selectQuotation'])->name('quotations.select');
+        Route::post('quotations/{quotation}/reject', [AdminController::class, 'rejectQuotation'])->name('quotations.reject');
     });
 });

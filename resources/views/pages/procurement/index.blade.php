@@ -79,6 +79,27 @@
                           </button>
                         </form>
                       @endif
+
+                      @if($order->delivery && $order->delivery->status === 'disputed' && auth()->user()->isAdmin())
+                        <div class="inline-flex items-center gap-1">
+                          <form action="{{ route('procurement.resolve-dispute', $order) }}" method="POST" class="inline">
+                            @csrf
+                            <input type="hidden" name="resolution" value="confirm_delivered">
+                            <input type="hidden" name="notes" value="Resolved by admin: verified delivered.">
+                            <button type="submit" class="px-2.5 py-1 rounded bg-[#127A4A] text-white text-[0.65rem] font-semibold hover:bg-[#0e5a36] transition-colors" title="Resolve as delivered">
+                              Resolve Delivered
+                            </button>
+                          </form>
+                          <form action="{{ route('procurement.resolve-dispute', $order) }}" method="POST" class="inline">
+                            @csrf
+                            <input type="hidden" name="resolution" value="mark_failed">
+                            <input type="hidden" name="notes" value="Resolved by admin: failed delivery.">
+                            <button type="submit" class="px-2.5 py-1 rounded bg-[#E05D44] text-white text-[0.65rem] font-semibold hover:bg-red-700 transition-colors" title="Mark procurement failed">
+                              Fail Order
+                            </button>
+                          </form>
+                        </div>
+                      @endif
                     @endif
                   </div>
                 </td>

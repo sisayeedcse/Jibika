@@ -156,11 +156,22 @@
             <a href="{{ route('requests.edit', $request) }}" class="w-full block text-center py-3 rounded-xl border border-[#e2e8f0] text-[#475569] text-sm font-medium hover:bg-[#f8fafc] transition-colors">Edit Request</a>
           @endif
 
-          @if($request->status === 'verified' && auth()->user()?->isAdmin())
+          @if($request->status === 'verified' && (auth()->user()?->isAdmin() || auth()->id() === $request->worker_id))
             <form action="{{ route('assessment.trigger', ['request' => $request]) }}" method="POST" aria-label="Trigger assessment">
               @csrf
               <button type="submit" class="w-full py-3 rounded-xl bg-[#127A4A] text-white text-sm font-semibold hover:bg-[#0e5a36] transition-colors shadow-md shadow-emerald-900/10">Trigger Assessment</button>
             </form>
+          @endif
+
+          @if($request->status === 'ai_assessed' && auth()->user()?->isAdmin() && !$request->fundingPool)
+            <form action="{{ route('funding.open', $request) }}" method="POST" aria-label="Open funding pool">
+              @csrf
+              <button type="submit" class="w-full py-3 rounded-xl bg-[#127A4A] text-white text-sm font-semibold hover:bg-[#0e5a36] transition-colors shadow-md shadow-emerald-900/10">Open Funding Pool</button>
+            </form>
+          @endif
+
+          @if($request->assessment_id)
+            <a href="{{ route('assessment.show', ['request' => $request, 'assessment' => $request->assessment_id]) }}" class="w-full block text-center py-3 rounded-xl border border-emerald-300 text-[#127A4A] bg-emerald-50 text-sm font-medium hover:bg-emerald-100 transition-colors">View Assessment Report</a>
           @endif
 
           @if((auth()->user()?->isAdmin() || auth()->id() === $request->worker_id) && $request->procurementOrder)

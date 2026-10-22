@@ -60,4 +60,63 @@ class ProcurementController extends Controller
 
         return redirect()->route('procurement.index')->with('success', 'Delivery status updated.');
     }
+
+    public function resolveDispute(Request $request, ProcurementOrder $order)
+    {
+        $user = auth()->user();
+        if (!$user->isAdmin()) {
+            abort(403, 'Only administrators may resolve delivery disputes.');
+        }
+
+        $delivery = $order->delivery;
+        if (!$delivery || $delivery->status !== 'disputed') {
+            return back()->withErrors(['status' => 'No active delivery dispute on this order.']);
+        }
+
+        $validated = $request->validate([
+            'resolution' => ['required','in:confirm_delivered,mark_failed,reopen_procurement'],
+            'notes'      => ['required','string','max:1000'],
+        ]);
+
+        \Illuminate\Support\Facades\DB::transaction(function () use ($order, $delivery, $validated, $user) {
+            switch ($validated['resolution']) {
+                case 'confirm_delivered':
+                    $delivery->update(['status' => 'delivered', 'confirmed_by' => $user->id]);
+                    $order->update(['status' => 'procured']);
+                    if ($order->request) {
+                        $order->request->update(['status' => 'delivered']);
+                    }
+                    break;
+
+                case 'mark_failed':
+                    $delivery->update(['status' => 'disputed']);
+                    $order->update(['status' => 'failed']);
+                    if ($order->request) {
+                        $order->request->update(['status' => 'procurement_failed']);
+                    }
+                    break;
+
+                case 'reopen_procurement':
+                    $delivery->update(['status' => 'pending']);
+                    $order->update(['status' => 'pending']);
+                    if ($order->request) {
+                        $order->request->update(['status' => 'procurement']);
+                    }
+                    break;
+            }
+
+            AuditLog::create([
+                'user_id'    => $user->id,
+                'action'     => 'resolve_delivery_dispute',
+                'model_type' => 'procurement_order',
+                'model_id'   => $order->id,
+                'new_state'  => [
+                    'resolution' => $validated['resolution'],
+                    'notes'      => $validated['notes'],
+                ],
+            ]);
+        });
+
+        return redirect()->route('procurement.index')->with('success', 'Dispute resolved successfully.');
+    }
 }

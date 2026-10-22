@@ -38,6 +38,7 @@ class RoleDashboardController extends Controller
 
         if ($user->isCommunity()) {
             $pendingVerifications = CommunityVerification::where('status', 'pending')
+                ->where('community_member_id', $user->id)
                 ->with(['request.worker.workerProfile', 'request.category'])
                 ->latest()
                 ->take(8)
@@ -51,7 +52,7 @@ class RoleDashboardController extends Controller
                 ->get();
 
             $stats = [
-                'pending_queue'  => CommunityVerification::where('status', 'pending')->count(),
+                'pending_queue'  => CommunityVerification::where('status', 'pending')->where('community_member_id', $user->id)->count(),
                 'verified_by_me' => CommunityVerification::where('community_member_id', $user->id)->where('status', 'verified')->count(),
                 'flagged_by_me'  => CommunityVerification::where('community_member_id', $user->id)->whereIn('status', ['flagged', 'rejected', 'needs_info'])->count(),
             ];
