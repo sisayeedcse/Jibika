@@ -29,6 +29,8 @@ class AssetRequestController extends Controller
 
     public function store(Request $request)
     {
+        $this->authorize('create', AssetRequest::class);
+
         $data = $request->validate([
             'category_id' => 'nullable|exists:asset_categories,id',
             'requested_amount_bdt' => ['required','numeric','min:1000','max:5000000'],
@@ -65,34 +67,34 @@ class AssetRequestController extends Controller
         return view('pages.requests.edit', compact('request','categories'));
     }
 
-    public function update(Request $request, AssetRequest $requestModel)
+    public function update(Request $httpRequest, AssetRequest $request)
     {
-        $this->authorize('update', $requestModel);
-        $data = $request->validate([
+        $this->authorize('update', $request);
+        $data = $httpRequest->validate([
             'category_id' => 'nullable|exists:asset_categories,id',
             'requested_amount_bdt' => ['required','numeric','min:1000','max:5000000'],
             'reason' => ['required','string','max:2000'],
             'livelihood_justification' => ['required','string','max:2000'],
         ]);
-        $requestModel->update($data);
-        return redirect()->route('requests.show', $requestModel)->with('success', 'Request updated.');
+        $request->update($data);
+        return redirect()->route('requests.show', $request)->with('success', 'Request updated.');
     }
 
-    public function submit(Request $request, AssetRequest $requestModel)
+    public function submit(Request $httpRequest, AssetRequest $request)
     {
-        $this->authorize('update', $requestModel);
-        if ($requestModel->status !== 'draft') {
+        $this->authorize('update', $request);
+        if ($request->status !== 'draft') {
             return back()->withErrors(['status' => 'Only drafts can be submitted.']);
         }
-        $requestModel->update(['status' => 'submitted']);
+        $request->update(['status' => 'submitted']);
         AuditLog::create([
             'user_id' => auth()->id(),
             'action' => 'submit_request',
             'model_type' => 'asset_request',
-            'model_id' => $requestModel->id,
+            'model_id' => $request->id,
             'new_state' => ['status' => 'submitted'],
         ]);
-        return redirect()->route('requests.show', $requestModel)->with('success', 'Request submitted for verification.');
+        return redirect()->route('requests.show', $request)->with('success', 'Request submitted for verification.');
     }
 
     public function assess(AssetRequest $request, AIService $ai)

@@ -16,10 +16,15 @@ class AssetRequestPolicy
     }
     public function update(User $user, AssetRequest $request): bool
     {
-        return $user->id === $request->worker_id && in_array($request->status, ['draft','submitted','needs_information','verified']);
+        return $user->id === $request->worker_id && $request->status === 'draft';
     }
     public function delete(User $user, AssetRequest $request): bool
     {
         return $user->id === $request->worker_id && $request->status === 'draft';
+    }
+
+    public function assess(User $user, AssetRequest $request): bool
+    {
+        return $user->isAdmin() || ($user->id === $request->worker_id && $request->status === 'verified');
     }
 }

@@ -13,9 +13,26 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 class JibikaWorkflowTest extends \Tests\TestCase
 {
     use RefreshDatabase;
+
+    protected function postWithCsrf($uri, array $data = [])
+    {
+        $token = 'test-csrf-token';
+        $data['_token'] = $token;
+
+        return $this->withSession(['_token' => $token])->post($uri, $data);
+    }
+
+    protected function putWithCsrf($uri, array $data = [])
+    {
+        $token = 'test-csrf-token';
+        $data['_token'] = $token;
+
+        return $this->withSession(['_token' => $token])->put($uri, $data);
+    }
+
     public function test_registration_creates_user_and_redirects(): void
     {
-        $response = $this->post('/register', [
+        $response = $this->postWithCsrf('/register', [
             'name' => 'Test User',
             'email' => 'test@example.com',
             'password' => 'password123',
@@ -31,7 +48,7 @@ class JibikaWorkflowTest extends \Tests\TestCase
     {
         $user = User::factory()->create(['email' => 'login@example.com', 'password' => bcrypt('password123')]);
 
-        $response = $this->post('/login', [
+        $response = $this->postWithCsrf('/login', [
             'email' => 'login@example.com',
             'password' => 'password123',
         ]);
@@ -39,7 +56,7 @@ class JibikaWorkflowTest extends \Tests\TestCase
         $response->assertRedirect(route('dashboard'));
         $this->assertAuthenticatedAs($user);
 
-        $this->post('/logout');
+        $this->postWithCsrf('/logout', []);
         $this->assertGuest();
     }
 
@@ -57,7 +74,7 @@ class JibikaWorkflowTest extends \Tests\TestCase
 
         $this->actingAs($user);
 
-        $response = $this->post('/requests', [
+        $response = $this->postWithCsrf('/requests', [
             'category_id' => AssetCategory::first()->id,
             'requested_amount_bdt' => 35000,
             'reason' => 'Need asset for livelihood.',
@@ -86,7 +103,7 @@ class JibikaWorkflowTest extends \Tests\TestCase
         ]);
 
         $this->actingAs($user);
-        $response = $this->put('/requests/' . $request->id, [
+        $response = $this->putWithCsrf('/requests/' . $request->id, [
             'category_id' => AssetCategory::create(['name' => 'Test Cat', 'name_bn' => 'টেস্ট', 'estimated_cost_bdt' => 1000])->id,
             'requested_amount_bdt' => 999999,
             'reason' => 'Updated reason.',
@@ -120,7 +137,7 @@ class JibikaWorkflowTest extends \Tests\TestCase
         ]);
 
         $this->actingAs($verifier);
-        $response = $this->post('/verification/' . $verification->id . '/decide', [
+        $response = $this->postWithCsrf('/verification/' . $verification->id . '/decide', [
             'status' => 'verified',
             'decision_notes' => 'Verified successfully.',
         ]);
@@ -143,7 +160,7 @@ class JibikaWorkflowTest extends \Tests\TestCase
         ]);
 
         $this->actingAs($worker);
-        $response = $this->post('/verification/' . $verification->id . '/decide', [
+        $response = $this->postWithCsrf('/verification/' . $verification->id . '/decide', [
             'status' => 'verified',
             'decision_notes' => 'Test.',
         ]);
@@ -157,7 +174,7 @@ class JibikaWorkflowTest extends \Tests\TestCase
         $request = AssetRequest::create(['worker_id' => $worker->id, 'status' => 'verified', 'requested_amount_bdt' => 35000, 'reason' => 'Test', 'livelihood_justification' => 'Test']);
 
         $this->actingAs($worker);
-        $response = $this->post('/requests/' . $request->id . '/assess-trigger');
+        $response = $this->postWithCsrf('/requests/' . $request->id . '/assess-trigger');
 
         $response->assertRedirect();
         $this->assertDatabaseHas('assessment_records', [
@@ -182,7 +199,11 @@ class JibikaWorkflowTest extends \Tests\TestCase
         ]);
 
         $this->actingAs($contributor);
-        $this->post('/funding/' . $pool->id . '/contribute', ['amount_bdt' => 10000]);
+        $response = $this->postWithCsrf('/funding/' . $pool->id . '/contribute', ['amount_bdt' => 10000]);
+
+        // Funding totals must remain consistent: pledge amount added to current_amount
+        $pool->refresh();
+        $this->assertEquals(10000, $pool->current_amount_bdt);
 
         $this->assertDatabaseHas('contribution_or_pledges', [
             'pool_id' => $pool->id,
@@ -199,7 +220,7 @@ class JibikaWorkflowTest extends \Tests\TestCase
         $request = AssetRequest::create(['worker_id' => $worker->id, 'status' => 'funded', 'requested_amount_bdt' => 35000, 'reason' => 'Test', 'livelihood_justification' => 'Test']);
 
         $this->actingAs($vendor);
-        $response = $this->post('/vendor/quote/' . $request->id, [
+        $response = $this->postWithCsrf('/vendor/quote/' . $request->id, [
             'quoted_amount_bdt' => 34000,
             'notes' => 'Can supply this asset.',
         ]);
@@ -216,8 +237,8 @@ class JibikaWorkflowTest extends \Tests\TestCase
         $user1 = User::factory()->create();
         $user2 = User::factory()->create();
 
-        Notification::create(['user_id' => $user1->id, 'title' => 'User 1 Alert', 'title_bn' => 'উপ reform1', 'body_en' => 'Body 1', 'body_bn' => 'শর reform1', 'type' => 'info']);
-        Notification::create(['user_id' => $user2->id, 'title' => 'User 2 Alert', 'title_bn' => 'উপ reform2', 'body_en' => 'Body 2', 'body_bn' => 'শর reform2', 'type' => 'info']);
+        Notification::create(['user_id' => $user1->id, 'title' => 'User 1 Alert', 'title_bn' => 'উপ réforme1', 'body_en' => 'Body 1', 'body_bn' => 'শর réforme1', 'type' => 'info']);
+        Notification::create(['user_id' => $user2->id, 'title' => 'User 2 Alert', 'title_bn' => 'উপ réforme2', 'body_en' => 'Body 2', 'body_bn' => 'শর réforme2', 'type' => 'info']);
 
         $this->actingAs($user1);
         $response = $this->get('/notifications');
