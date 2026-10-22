@@ -1,32 +1,36 @@
 <x-layout title="Audit Log">
-  <div class="mb-6">
-    <h1 class="text-3xl font-extrabold text-slate-dark mb-2">Audit Log</h1>
-    <p class="text-slate-500">Review platform activity and workflow changes.</p>
+  <div class="mb-8">
+    <h1 class="text-[1.75rem] md:text-[2rem] font-extrabold tracking-tight mb-2">Audit Log</h1>
+    <p class="text-[#475569]">Review platform activity, workflow changes, and security-sensitive actions.</p>
   </div>
 
-  <div class="bg-white rounded-3xl p-6 shadow-sm border border-slate-100 overflow-x-auto">
-    <table class="w-full text-left border-collapse">
-      <thead>
-        <tr class="border-b border-slate-200 text-sm text-slate-500">
-          <th class="pb-4 font-medium">User</th>
-          <th class="pb-4 font-medium">Action</th>
-          <th class="pb-4 font-medium">Model</th>
-          <th class="pb-4 font-medium">Model ID</th>
-          <th class="pb-4 font-medium">Time</th>
-        </tr>
-      </thead>
-      <tbody class="divide-y divide-slate-100">
-        @foreach($logs as $log)
-          <tr class="hover:bg-slate-50/50 transition">
-            <td class="pb-4 text-sm">{{ $log->user?->name ?? 'System' }}</td>
-            <td class="pb-4 text-sm font-medium text-slate-dark">{{ ucfirst(str_replace('_', ' ', $log->action)) }}</td>
-            <td class="pb-4 text-sm">{{ ucfirst(str_replace('_', ' ', $log->model_type)) }}</td>
-            <td class="pb-4 text-sm">{{ $log->model_id }}</td>
-            <td class="pb-4 text-sm text-slate-500">{{ $log->created_at->format('M d, Y H:i') }}</td>
+  <div class="bg-white rounded-2xl shadow-card border border-[#f1f5f9] overflow-hidden">
+    <div class="overflow-x-auto">
+      <table class="w-full text-left border-collapse min-w-[720px]">
+        <thead>
+          <tr class="border-b border-[#f1f5f9] text-xs uppercase tracking-wider text-[#94a3b8] font-medium">
+            <th class="px-6 py-3.5">User</th>
+            <th class="px-6 py-3.5">Action</th>
+            <th class="px-6 py-3.5">Model</th>
+            <th class="px-6 py-3.5">Model ID</th>
+            <th class="px-6 py-3.5">Time</th>
           </tr>
-        @endforeach
-      </tbody>
-    </table>
+        </thead>
+        <tbody class="divide-y divide-[#f1f5f9]">
+          @foreach($logs as $log)
+            <tr class="hover:bg-[#f8fafc]/60 transition-colors">
+              <td class="px-6 py-4 text-sm text-[#475569]">{{ $log->user?->name ?? 'System' }}</td>
+              <td class="px-6 py-4 text-sm font-semibold text-[#0f172a]">{{ ucfirst(str_replace('_', ' ', $log->action)) }}</td>
+              <td class="px-6 py-4 text-sm text-[#475569]">{{ ucfirst(str_replace('_', ' ', $log->model_type)) }}</td>
+              <td class="px-6 py-4 text-sm text-[#475569]">{{ $log->model_id }}</td>
+              <td class="px-6 py-4 text-xs text-[#94a3b8]">{{ $log->created_at->format('M d, Y H:i') }}</td>
+            </tr>
+          @endforeach
+        </tbody>
+      </table>
+    </div>
+    <div class="px-6 py-4 border-t border-[#f1f5f9] bg-[#f8fafc]/40">
+      {{ $logs->links() }}
+    </div>
   </div>
-  {{ $logs->links() }}
 </x-layout>

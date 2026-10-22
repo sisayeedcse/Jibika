@@ -1,0 +1,21 @@
+/* JIBIKA Design System — Premium fintech / livelihood platform */
+:root {
+  --brand-green: #127A4A;
+  --brand-green-deep: #0e5a36;
+  --brand-green-soft: #e8f2ec;
+  --brand-coral: #E05D44;
+  --brand-coral-soft: #fbeae6;
+  --surface: #f8fafc;
+  --surface-card: #ffffff;
+  --text-primary: #0f172a;
+  --text-secondary: #475569;
+  --text-muted: #94a3b8;
+  --border-subtle: #e2e8f0;
+  --border-soft: #f1f5f9;
+  --shadow-card: 0 1px 3px rgba(15,23,42,0.05), 0 1px 2px rgba(15,23,42,0.03);
+  --shadow-card-hover: 0 10px 25px rgba(15,23,42,0.06), 0 4px 10px rgba(15,23,42,0.03);
+  --radius-sm: 0.5rem;
+  --radius-md: 0.75rem;
+  --radius-lg: 1rem;
+  --font-body: 'Inter', 'Noto Sans Bengali', ui-sans-serif, system-ui, -apple-system, sans-serif;
+}
