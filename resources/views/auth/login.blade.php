@@ -82,6 +82,32 @@
         <div class="mt-6 pt-6 border-t border-[#f1f5f9] text-center text-xs text-[#475569]">
           New to JIBIKA? <a href="{{ route('register') }}" class="text-[#127A4A] font-bold hover:underline">Create an account</a>
         </div>
+
+        @if(config('app.demo_mode'))
+          <div class="mt-6 pt-6 border-t border-[#f1f5f9]">
+            <div class="flex items-center justify-between mb-3">
+              <span class="text-xs font-bold uppercase tracking-wider text-[#94a3b8]">Quick Demo Personas</span>
+              <span class="text-[0.65rem] font-mono px-2 py-0.5 rounded bg-amber-100 text-amber-800 font-semibold">DEMO MODE ACTIVE</span>
+            </div>
+            <p class="text-xs text-[#64748b] mb-3">Authenticate directly as a seeded simulation persona (CSRF &amp; rate-limit protected):</p>
+            <div class="grid grid-cols-2 gap-2">
+              @foreach([
+                'worker'      => 'Worker (Rahim)',
+                'community'   => 'Verifier (Anisur)',
+                'contributor' => 'Sponsor (Dr. Tariqul)',
+                'vendor'      => 'Vendor (Bengal Machinery)',
+                'admin'       => 'Admin Console'
+              ] as $roleKey => $roleLabel)
+                <form action="{{ route('demo.login', $roleKey) }}" method="POST" class="{{ $loop->last ? 'col-span-2' : '' }}">
+                  @csrf
+                  <button type="submit" class="w-full text-left p-2.5 rounded-xl border border-[#e2e8f0] hover:border-[#127A4A] hover:bg-[#127A4A]/5 transition-all text-xs font-semibold text-[#0f172a] hover:text-[#127A4A]">
+                    {{ $roleLabel }} &rarr;
+                  </button>
+                </form>
+              @endforeach
+            </div>
+          </div>
+        @endif
       </div>
 
       <p class="text-center text-[0.7rem] text-[#94a3b8] mt-6">All funding is simulated and clearly labeled. No real payments are processed.</p>

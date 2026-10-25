@@ -19,8 +19,13 @@ Route::get('/', function () { return view('pages.landing'); })->name('home');
 Route::get('/how-it-works', function () { return view('pages.how-it-works'); })->name('how-it-works');
 
 Route::get('login', [LoginController::class, 'show'])->name('login');
-Route::post('login', [LoginController::class, 'authenticate'])->name('login.post');
+Route::post('login', [LoginController::class, 'authenticate'])->middleware('throttle:10,1')->name('login.post');
 Route::post('logout', [LoginController::class, 'logout'])->name('logout');
+
+Route::post('demo-login/{role}', [\App\Http\Controllers\Auth\DemoLoginController::class, 'login'])
+    ->middleware('throttle:15,1')
+    ->whereIn('role', ['worker', 'community', 'contributor', 'vendor', 'admin'])
+    ->name('demo.login');
 
 Route::get('register', [RegisterController::class, 'show'])->name('register');
 Route::post('register', [RegisterController::class, 'store'])->name('register.post');
@@ -34,6 +39,7 @@ Route::middleware(['auth','active'])->group(function () {
 
     Route::get('requests', [AssetRequestController::class, 'index'])->name('requests.index');
     Route::get('requests/create', [AssetRequestController::class, 'create'])->name('requests.create');
+    Route::post('requests/draft', \App\Http\Controllers\RequestDraftController::class)->middleware('throttle:6,1')->name('requests.draft');
     Route::post('requests', [AssetRequestController::class, 'store'])->name('requests.store');
     Route::get('requests/{request}', [AssetRequestController::class, 'show'])->name('requests.show');
     Route::get('requests/{request}/edit', [AssetRequestController::class, 'edit'])->name('requests.edit');
@@ -66,7 +72,7 @@ Route::middleware(['auth','active'])->group(function () {
     Route::post('notifications/{notification}/read', [NotificationController::class, 'markRead'])->name('notifications.read');
     Route::get('notifications/count', [NotificationController::class, 'count'])->name('notifications.count');
 
-    Route::prefix('admin')->name('admin.')->group(function () {
+    Route::prefix('admin')->name('admin.')->middleware('admin')->group(function () {
         Route::get('/', [AdminController::class, 'index'])->name('dashboard');
         Route::get('users', [AdminController::class, 'users'])->name('users');
         Route::post('users/{user}/status', [AdminController::class, 'setStatus'])->name('users.status');

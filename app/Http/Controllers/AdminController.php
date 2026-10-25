@@ -40,6 +40,9 @@ class AdminController extends Controller
 
     public function setStatus(SetUserStatusRequest $request, User $user)
     {
+        abort_if($user->id === auth()->id(), 422, 'You cannot change your own status.');
+        abort_if(config('app.demo_mode') && str_ends_with($user->email, '@demo.local'), 403, 'Demo accounts cannot be suspended.');
+
         $validated = $request->validated();
         $previous = $user->status;
         $user->update(['status' => $validated['status']]);

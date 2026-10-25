@@ -38,6 +38,8 @@ return [
     'ai' => [
         'provider' => env('AI_PROVIDER', 'development'),
         'key'      => env('AI_API_KEY', ''),
+        'model'    => env('AI_MODEL', 'gemini-2.5-flash'),
+        'timeout'  => (int) env('AI_TIMEOUT', 8),
     ],
 
 ];
