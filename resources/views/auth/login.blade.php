@@ -21,10 +21,21 @@
     <div class="max-w-6xl mx-auto px-6 lg:px-8">
       <div class="flex items-center justify-between h-[68px]">
         <a href="/" class="text-[1.35rem] font-extrabold tracking-tight text-[#127A4A]" aria-label="JIBIKA Home">JIBIKA</a>
-        <div class="flex items-center gap-7 text-[0.88rem] font-medium text-[#475569]">
-          <a href="/" class="hover:text-[#127A4A] transition-colors">Home</a>
-          <a href="{{ route('how-it-works') }}" class="hover:text-[#127A4A] transition-colors">How It Works</a>
-          <a href="{{ route('register') }}" class="inline-flex items-center px-4 py-2 rounded-lg bg-[#127A4A] text-white text-[0.8rem] font-semibold hover:bg-[#0e5a36] transition-colors shadow-sm">Register</a>
+        <div class="flex items-center gap-5 text-[0.88rem] font-medium text-[#475569]">
+          <a href="/" class="hover:text-[#127A4A] transition-colors">{{ __('Home') }}</a>
+          <a href="{{ route('how-it-works') }}" class="hover:text-[#127A4A] transition-colors">{{ __('How It Works') }}</a>
+          <a href="{{ route('register') }}" class="inline-flex items-center px-4 py-2 rounded-lg bg-[#127A4A] text-white text-[0.8rem] font-semibold hover:bg-[#0e5a36] transition-colors shadow-sm">{{ __('Register') }}</a>
+          <div class="inline-flex items-center rounded-lg border border-slate-200 p-0.5 text-xs font-semibold bg-slate-50">
+            <form action="{{ route('locale.switch', 'en') }}" method="POST" class="inline">
+              @csrf
+              <button type="submit" class="px-1.5 py-0.5 rounded {{ app()->getLocale() === 'en' ? 'bg-white text-[#127A4A]' : 'text-slate-500' }}">EN</button>
+            </form>
+            <span class="text-slate-300">|</span>
+            <form action="{{ route('locale.switch', 'bn') }}" method="POST" class="inline">
+              @csrf
+              <button type="submit" class="px-1.5 py-0.5 rounded {{ app()->getLocale() === 'bn' ? 'bg-white text-[#127A4A]' : 'text-slate-500' }}">বাংলা</button>
+            </form>
+          </div>
         </div>
       </div>
     </div>
@@ -34,8 +45,8 @@
     <div class="w-full max-w-[420px]">
       <div class="bg-white rounded-2xl shadow-card border border-[#f1f5f9] p-8 md:p-10">
         <div class="mb-7">
-          <h1 class="text-[1.6rem] font-extrabold tracking-tight mb-1 text-[#0f172a]">Sign In</h1>
-          <p class="text-sm text-[#475569]">Access your role workspace and request progress.</p>
+          <h1 class="text-[1.6rem] font-extrabold tracking-tight mb-1 text-[#0f172a]">{{ __('Sign In') }}</h1>
+          <p class="text-sm text-[#475569]">{{ __('Access your role workspace and request progress.') }}</p>
         </div>
 
         @if(session('success'))
@@ -58,35 +69,35 @@
           @csrf
 
           <div>
-            <label for="email" class="block text-xs font-semibold uppercase tracking-wider text-[#94a3b8] mb-1.5">Email address</label>
+            <label for="email" class="block text-xs font-semibold uppercase tracking-wider text-[#94a3b8] mb-1.5">{{ __('Email address') }}</label>
             <input id="email" name="email" type="email" value="{{ old('email') }}" placeholder="you@example.com" class="w-full px-4 py-3 rounded-xl border border-[#e2e8f0] text-sm focus-ring bg-[#f8fafc] focus:bg-white transition-colors" required autocomplete="email" autofocus>
           </div>
 
           <div>
-            <label for="password" class="block text-xs font-semibold uppercase tracking-wider text-[#94a3b8] mb-1.5">Password</label>
+            <label for="password" class="block text-xs font-semibold uppercase tracking-wider text-[#94a3b8] mb-1.5">{{ __('Password') }}</label>
             <input id="password" name="password" type="password" placeholder="Enter your password" class="w-full px-4 py-3 rounded-xl border border-[#e2e8f0] text-sm focus-ring bg-[#f8fafc] focus:bg-white transition-colors" required autocomplete="current-password">
           </div>
 
           <div class="flex items-center justify-between text-xs pt-1">
             <label class="flex items-center gap-2 text-[#475569] cursor-pointer select-none">
               <input type="checkbox" name="remember" class="w-4 h-4 rounded border-[#e2e8f0] text-[#127A4A] focus:ring-[#127A4A]/20" {{ old('remember') ? 'checked' : '' }}>
-              Remember me
+              {{ __('Remember me') }}
             </label>
           </div>
 
           <button type="submit" class="w-full py-3 rounded-xl bg-[#127A4A] text-white font-semibold hover:bg-[#0e5a36] transition-colors shadow-md shadow-emerald-900/10 mt-2">
-            Sign In
+            {{ __('Sign In') }}
           </button>
         </form>
 
         <div class="mt-6 pt-6 border-t border-[#f1f5f9] text-center text-xs text-[#475569]">
-          New to JIBIKA? <a href="{{ route('register') }}" class="text-[#127A4A] font-bold hover:underline">Create an account</a>
+          {{ __('New to JIBIKA?') }} <a href="{{ route('register') }}" class="text-[#127A4A] font-bold hover:underline">{{ __('Create an account') }}</a>
         </div>
 
         @if(config('app.demo_mode'))
           <div class="mt-6 pt-6 border-t border-[#f1f5f9]">
             <div class="flex items-center justify-between mb-3">
-              <span class="text-xs font-bold uppercase tracking-wider text-[#94a3b8]">Quick Demo Personas</span>
+              <span class="text-xs font-bold uppercase tracking-wider text-[#94a3b8]">{{ __('Quick Demo Personas') }}</span>
               <span class="text-[0.65rem] font-mono px-2 py-0.5 rounded bg-amber-100 text-amber-800 font-semibold">DEMO MODE ACTIVE</span>
             </div>
             <p class="text-xs text-[#64748b] mb-3">Authenticate directly as a seeded simulation persona (CSRF &amp; rate-limit protected):</p>
@@ -110,7 +121,7 @@
         @endif
       </div>
 
-      <p class="text-center text-[0.7rem] text-[#94a3b8] mt-6">All funding is simulated and clearly labeled. No real payments are processed.</p>
+      <p class="text-center text-[0.7rem] text-[#94a3b8] mt-6">{{ __('All funding is simulated and clearly labeled. No real payments are processed.') }}</p>
     </div>
   </main>
 

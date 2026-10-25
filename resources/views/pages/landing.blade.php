@@ -31,41 +31,67 @@
           <span class="text-xs px-2 py-0.5 rounded-full bg-emerald-50 text-[#127A4A] font-bold border border-emerald-200">জীবিকা</span>
         </div>
         <div class="hidden md:flex items-center gap-7 text-[0.88rem] font-medium text-[#475569]">
-          <a href="/" class="hover:text-[#127A4A] transition-colors">Home</a>
-          <a href="{{ route('how-it-works') }}" class="hover:text-[#127A4A] transition-colors">How It Works</a>
+          <a href="/" class="hover:text-[#127A4A] transition-colors">{{ __('Home') }}</a>
+          <a href="{{ route('how-it-works') }}" class="hover:text-[#127A4A] transition-colors">{{ __('How It Works') }}</a>
           @auth
-            <a href="{{ route('dashboard') }}" class="hover:text-[#127A4A] transition-colors">Workspace</a>
+            <a href="{{ route('dashboard') }}" class="hover:text-[#127A4A] transition-colors">{{ __('Dashboard') }}</a>
             <form action="{{ route('logout') }}" method="POST" class="inline">
               @csrf
-              <button type="submit" class="hover:text-[#127A4A] transition-colors">Sign Out</button>
+              <button type="submit" class="hover:text-[#127A4A] transition-colors">{{ __('Sign Out') }}</button>
             </form>
           @else
-            <a href="{{ route('login') }}" class="hover:text-[#127A4A] transition-colors">Sign In</a>
-            <a href="{{ route('register') }}" class="inline-flex items-center px-4 py-2 rounded-xl bg-[#127A4A] text-white text-[0.82rem] font-semibold hover:bg-[#0e5a36] transition-colors shadow-md shadow-emerald-900/10">Register</a>
+            <a href="{{ route('login') }}" class="hover:text-[#127A4A] transition-colors">{{ __('Sign In') }}</a>
+            <a href="{{ route('register') }}" class="inline-flex items-center px-4 py-2 rounded-xl bg-[#127A4A] text-white text-[0.82rem] font-semibold hover:bg-[#0e5a36] transition-colors shadow-md shadow-emerald-900/10">{{ __('Register') }}</a>
           @endauth
+
+          {{-- Language Switcher --}}
+          <div class="inline-flex items-center rounded-lg border border-slate-200 p-0.5 text-xs font-semibold bg-slate-50 ml-2">
+            <form action="{{ route('locale.switch', 'en') }}" method="POST" class="inline">
+              @csrf
+              <button type="submit" class="px-2 py-0.5 rounded {{ app()->getLocale() === 'en' ? 'bg-white text-[#127A4A] shadow-xs' : 'text-slate-500 hover:text-slate-900' }}">EN</button>
+            </form>
+            <span class="text-slate-300">|</span>
+            <form action="{{ route('locale.switch', 'bn') }}" method="POST" class="inline">
+              @csrf
+              <button type="submit" class="px-2 py-0.5 rounded {{ app()->getLocale() === 'bn' ? 'bg-white text-[#127A4A] shadow-xs' : 'text-slate-500 hover:text-slate-900' }}">বাংলা</button>
+            </form>
+          </div>
         </div>
-        <div class="md:hidden">
+        <div class="md:hidden flex items-center gap-3">
+          <div class="inline-flex items-center rounded-lg border border-slate-200 p-0.5 text-xs font-semibold bg-slate-50">
+            <form action="{{ route('locale.switch', 'en') }}" method="POST" class="inline">
+              @csrf
+              <button type="submit" class="px-1.5 py-0.5 rounded {{ app()->getLocale() === 'en' ? 'bg-white text-[#127A4A]' : 'text-slate-500' }}">EN</button>
+            </form>
+            <span class="text-slate-300">|</span>
+            <form action="{{ route('locale.switch', 'bn') }}" method="POST" class="inline">
+              @csrf
+              <button type="submit" class="px-1.5 py-0.5 rounded {{ app()->getLocale() === 'bn' ? 'bg-white text-[#127A4A]' : 'text-slate-500' }}">বাং</button>
+            </form>
+          </div>
           <button onclick="document.getElementById('mobile-menu').classList.toggle('hidden')" class="text-[#475569] hover:text-[#127A4A] p-2" aria-label="Toggle menu">☰</button>
         </div>
       </div>
     </div>
     <div id="mobile-menu" class="hidden md:hidden border-t border-[#e2e8f0] bg-white">
       <div class="max-w-6xl mx-auto px-6 py-4 flex flex-col gap-3 text-sm font-medium text-[#475569]">
-        <a href="/" class="py-1.5 hover:text-[#127A4A]">Home</a>
-        <a href="{{ route('how-it-works') }}" class="py-1.5 hover:text-[#127A4A]">How It Works</a>
+        <a href="/" class="py-1.5 hover:text-[#127A4A]">{{ __('Home') }}</a>
+        <a href="{{ route('how-it-works') }}" class="py-1.5 hover:text-[#127A4A]">{{ __('How It Works') }}</a>
         @auth
-          <a href="{{ route('dashboard') }}" class="py-1.5 hover:text-[#127A4A]">Workspace</a>
+          <a href="{{ route('dashboard') }}" class="py-1.5 hover:text-[#127A4A]">{{ __('Dashboard') }}</a>
           <form action="{{ route('logout') }}" method="POST">
             @csrf
-            <button type="submit" class="py-1.5 text-left text-[#E05D44]">Sign Out</button>
+            <button type="submit" class="py-1.5 text-left text-[#E05D44]">{{ __('Sign Out') }}</button>
           </form>
         @else
-          <a href="{{ route('login') }}" class="py-1.5 hover:text-[#127A4A]">Sign In</a>
-          <a href="{{ route('register') }}" class="py-1.5 text-[#127A4A] font-bold">Register</a>
+          <a href="{{ route('login') }}" class="py-1.5 hover:text-[#127A4A]">{{ __('Sign In') }}</a>
+          <a href="{{ route('register') }}" class="py-1.5 text-[#127A4A] font-bold">{{ __('Register') }}</a>
         @endauth
       </div>
     </div>
   </nav>
+
+  <x-walkthrough-banner />
 
   <main class="flex-grow">
     <!-- Hero Section -->

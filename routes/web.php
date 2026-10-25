@@ -18,6 +18,10 @@ use App\Http\Controllers\RoleDashboardController;
 Route::get('/', function () { return view('pages.landing'); })->name('home');
 Route::get('/how-it-works', function () { return view('pages.how-it-works'); })->name('how-it-works');
 
+Route::post('locale/{locale}', [\App\Http\Controllers\LocaleController::class, 'switch'])
+    ->whereIn('locale', ['en', 'bn'])
+    ->name('locale.switch');
+
 Route::get('login', [LoginController::class, 'show'])->name('login');
 Route::post('login', [LoginController::class, 'authenticate'])->middleware('throttle:10,1')->name('login.post');
 Route::post('logout', [LoginController::class, 'logout'])->name('logout');

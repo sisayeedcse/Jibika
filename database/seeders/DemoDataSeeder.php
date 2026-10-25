@@ -151,9 +151,9 @@ class DemoDataSeeder extends Seeder
                     'demand'     => 'Local wholesale contract verified.',
                     'viability'  => 'Cost matches market baseline for direct productive output.',
                 ],
-                'method_version'       => 'v1.0-rules',
+                'method_version'       => 'v1.1-rules',
                 'is_ai_generated'      => false,
-                'provider_name'        => 'NOT AN LLM RESPONSE',
+                'provider_name'        => 'rule-engine',
             ]
         );
 

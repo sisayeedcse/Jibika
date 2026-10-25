@@ -289,4 +289,54 @@ class JibikaAiAndHardeningTest extends TestCase
             ->postJson(route('requests.draft'), ['text' => 'Testing rate limiting for draft endpoint'])
             ->assertStatus(429);
     }
+
+    public function test_locale_switch_and_bengali_rendering(): void
+    {
+        $response = $this->post(route('locale.switch', 'bn'));
+        $response->assertSessionHas('locale', 'bn');
+
+        $worker = $this->makeWorker();
+        $cat = AssetCategory::create([
+            'name'               => 'Industrial Sewing Machine',
+            'name_bn'            => 'শিল্প সেলাই মেশিন',
+            'estimated_cost_bdt' => 35000,
+            'description'        => '',
+        ]);
+
+        $page = $this->withSession(['locale' => 'bn'])
+            ->actingAs($worker)
+            ->get(route('requests.create'));
+
+        $page->assertOk();
+        $page->assertSee('নতুন সম্পদ অনুরোধ');
+        $page->assertSee('শিল্প সেলাই মেশিন');
+        $page->assertSee('খসড়া সংরক্ষণ');
+
+        // Switch back to en
+        $this->post(route('locale.switch', 'en'))->assertSessionHas('locale', 'en');
+        $enPage = $this->withSession(['locale' => 'en'])
+            ->actingAs($worker)
+            ->get(route('requests.create'));
+        $enPage->assertSee('New Asset Request');
+    }
+
+    public function test_invalid_locale_is_rejected(): void
+    {
+        $response = $this->post('/locale/fr');
+        $response->assertNotFound();
+    }
+
+    public function test_walkthrough_banner_rendering_in_demo_mode(): void
+    {
+        config(['app.demo_mode' => true]);
+        $response = $this->get(route('home'));
+        $response->assertOk();
+        $response->assertSee('Demo Walkthrough');
+        $response->assertSee('Follow the 9-Stage Asset Lifecycle');
+
+        config(['app.demo_mode' => false]);
+        $responseDisabled = $this->get(route('home'));
+        $responseDisabled->assertOk();
+        $responseDisabled->assertDontSee('Demo Walkthrough');
+    }
 }

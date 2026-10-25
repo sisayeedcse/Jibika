@@ -113,5 +113,5 @@ $config = match($normalized) {
 
 <span {{ $attributes->merge(['class' => 'inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold border ' . $config['bg']]) }}>
   <span class="w-1.5 h-1.5 rounded-full {{ $config['dot'] }}" aria-hidden="true"></span>
-  {{ $config['label'] }}
+  {{ __($normalized) !== $normalized ? __($normalized) : $config['label'] }}
 </span>
