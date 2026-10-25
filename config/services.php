@@ -35,4 +35,9 @@ return [
         ],
     ],
 
+    'ai' => [
+        'provider' => env('AI_PROVIDER', 'development'),
+        'key'      => env('AI_API_KEY', ''),
+    ],
+
 ];

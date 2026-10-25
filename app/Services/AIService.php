@@ -8,8 +8,8 @@ class AIService
 {
     public function assess(AssetRequest $request): AssessmentRecord
     {
-        $provider = env('AI_PROVIDER', 'development');
-        $key = env('AI_API_KEY', '');
+        $provider = config('services.ai.provider', 'development');
+        $key = config('services.ai.key', '');
         $isReal = ($provider !== 'development' && $provider !== 'rule_based' && !empty($key));
 
         $category = 'MEDIUM';
