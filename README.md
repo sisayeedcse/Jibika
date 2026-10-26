@@ -5,15 +5,15 @@
 [![Laravel](https://img.shields.io/badge/Laravel-12.x-red)](https://laravel.com)
 [![PHP](https://img.shields.io/badge/PHP-8.2%2B-blue)](https://php.net)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
-[![Demo](https://img.shields.io/badge/Live%20Demo-jibika.gadgetexa.com-emerald)](https://jibika.gadgetexa.com)
+[![Deployment](https://img.shields.io/badge/Deployment%20Target-jibika.gadgetexa.com-amber)](https://jibika.gadgetexa.com)
 
-> **JIBIKA** is a functional architectural prototype connecting informal micro-entrepreneurs in Bangladesh (tailors, bakers, carpenters, smallholder artisans) with physical, income-generating productive assets through transparent community physical verification, deterministic explainable viability scoring, simulated asset sponsorship, competitive equipment procurement, and long-term livelihood impact tracking.
+> **JIBIKA** is a functional prototype connecting informal micro-entrepreneurs in Bangladesh (tailors, bakers, carpenters, smallholder artisans) with physical, income-generating productive assets through transparent community physical verification, deterministic explainable viability scoring, simulated asset sponsorship, competitive equipment procurement, and long-term livelihood impact tracking.
 
 ---
 
-## 🌐 Live System & Demo Access
+## 🌐 System & Demo Access
 
-- **Public Live URL:** [https://jibika.gadgetexa.com](https://jibika.gadgetexa.com)
+- **Target Public URL:** `https://jibika.gadgetexa.com` *(cPanel subdomain setup & deployment in progress)*
 - **One-Click Demo Mode:** Accessible via `/login` and the persistent top-level **Judge Walkthrough Banner**.
 
 ### Seeded Demonstration Personas
@@ -33,14 +33,14 @@ When `DEMO_MODE=true` is enabled, all demo personas authenticate with the value 
 
 ## 💡 The Core Approach: In-Kind Productive Financing
 
-In informal economies, micro-entrepreneurs frequently struggle to acquire productive machinery:
-1. **Cash Diversion Risk:** Unencumbered cash loans or grants can easily be diverted to acute household emergencies, healthcare needs, or existing debts rather than capital equipment.
-2. **Immediate Repayment Stress:** Traditional micro-credit repayment schedules often begin days after disbursement—before an artisan can install equipment, source material, and generate incremental revenue.
+According to the BBS Labour Force Survey (LFS 2022/2023), approximately 84.9% of employed persons in Bangladesh (nearly 60 million workers) work in the informal economy. Microfinance institutions (Grameen, BRAC) have pioneered financial inclusion across the country, but acquiring physical capital equipment presents distinct structural challenges:
+1. **Cash Diversion Risk:** Unencumbered cash loans or grants often face pressure from acute household emergencies, healthcare needs, or existing debts rather than capital equipment.
+2. **Immediate Repayment Stress:** Traditional weekly micro-credit repayment schedules often begin days after disbursement—before an artisan can install machinery, source materials, and generate incremental revenue.
 3. **Execution Gaps:** Without physical verification of trade readiness and post-handover tracking, community support initiatives struggle to measure tangible economic mobility.
 
-### The JIBIKA In-Kind Model
-- **Direct Equipment Procurement:** Capital is disbursed directly to vetted machinery vendors rather than handed out as cash.
-- **Physical Handover Proof:** Equipment delivery requires photo evidence, machine serial inspection, and confirmed worker receipt.
+### The JIBIKA Complementary Model
+- **Direct Equipment Procurement:** Designed to disburse capital directly to vetted machinery vendors rather than handing out cash (simulated in the prototype).
+- **Physical Handover Proof:** Delivery confirmation is recorded on-site, unlocking post-delivery monitoring.
 - **Long-Term Monitoring:** Periodic check-ins record verified net monthly household income and production capacity over time.
 
 ---
@@ -225,17 +225,13 @@ resources/
 
 ---
 
-## ⚖️ Pre-Event Disclosure & Hackathon Notice
+## ⚖️ Pre-Event Disclosure & Project Timeline
 
-- **Solo Participant:** Md. Sayeed Alam
-- **Baseline Release:** `v0.9-pre-hackathon` (Tagged at baseline commit `0446857`).
-- **YUNet 2026 Preparation Additions (`pre-yunet-prep` branch):**
-  - Natural-language request drafting via Google Gemini Flash with schema enforcement and PII redaction.
-  - Bangla voice-to-text integration via Web Speech API (`bn-BD`).
-  - Transparent rule assessment engine (`v1.1-rules`) with strict non-AI provenance tagging.
-  - Role-based one-click demo mode with CSRF protection, rate limiting, and 5-persona walkthrough banner.
-  - Bilingual localization switcher (`en` / `bn`).
-  - Pessimistic concurrency locks on assessment and funding, admin hardening (`EnsureAdmin`), and `demo:reset` command.
+- **Solo Participant:** [Participant Name / Institution]
+- **Three-Stage Project Progression:**
+  1. **Earlier Hackathon Baseline:** Working platform tagged at `v0.9-pre-hackathon` (commit `0446857`), featuring 5 roles, a 9-stage lifecycle, and 61 automated tests.
+  2. **Pre-Hackathon Preparation (25–26 October, confirmed allowed by organizers):** Admin route middleware, pessimistic concurrency locks, honest rule engine (`v1.1-rules`), LLM natural language request builder with keyword fallback, bilingual Bangla/English toggle, demo personas & walkthrough banner, and `demo:reset` command. Expanded suite to 79 automated tests.
+  3. **Hackathon Window Additions (1–5 November):** Real delivery-proof photo upload (MIME/size validated, stored privately) and verifier on-ground physical evidence checklist.
 
 ---
 
