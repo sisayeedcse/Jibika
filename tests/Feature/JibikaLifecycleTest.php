@@ -96,7 +96,7 @@ class JibikaLifecycleTest extends \Tests\TestCase
 
         $assessment = $request->assessment;
         $this->assertNotNull($assessment);
-        $this->assertEquals('NOT AN LLM RESPONSE', $assessment->provider_name);
+        $this->assertEquals('rule-engine', $assessment->provider_name);
         $this->assertFalse($assessment->is_ai_generated);
         $this->assertNotNull($assessment->suitability_category);
         $this->assertArrayHasKey('cost', $assessment->explanation_json);

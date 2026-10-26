@@ -25,8 +25,8 @@
       @if($assessment->explanation_json)
         @foreach($assessment->explanation_json as $key => $value)
           <div class="flex justify-between items-start gap-4 mb-3 last:mb-0">
-            <span class="font-semibold text-[#0f172a] shrink-0">{{ ucfirst(str_replace('_', ' ', $key)) }}</span>
-            <span class="text-[#475569] text-right">{{ $value }}</span>
+            <span class="font-semibold text-[#0f172a] shrink-0">{{ __(ucfirst(str_replace('_', ' ', $key))) }}</span>
+            <span class="text-[#475569] text-right">{{ __($value) }}</span>
           </div>
         @endforeach
       @else

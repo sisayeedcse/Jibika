@@ -7,6 +7,7 @@ use App\Models\AssetRequest;
 use App\Models\AuditLog;
 use App\Models\User;
 use App\Services\AIService;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 
 class AssessAssetRequestAction
@@ -21,27 +22,31 @@ class AssessAssetRequestAction
             abort(403, 'You may not trigger assessment for this request.');
         }
 
-        if ($request->status !== 'verified') {
-            throw ValidationException::withMessages([
-                'status' => 'Assessment can only be triggered for verified requests.',
+        return DB::transaction(function () use ($request, $user) {
+            $lockedRequest = AssetRequest::whereKey($request->id)->lockForUpdate()->firstOrFail();
+
+            if ($lockedRequest->status !== 'verified') {
+                throw ValidationException::withMessages([
+                    'status' => 'Assessment can only be triggered for verified requests.',
+                ]);
+            }
+
+            $assessment = $this->aiService->assess($lockedRequest);
+
+            $lockedRequest->update([
+                'status'        => 'ai_assessed',
+                'assessment_id' => $assessment->id,
             ]);
-        }
 
-        $assessment = $this->aiService->assess($request);
+            AuditLog::create([
+                'user_id'    => $user->id,
+                'action'     => 'assess_request',
+                'model_type' => 'asset_request',
+                'model_id'   => $lockedRequest->id,
+                'new_state'  => ['status' => 'ai_assessed', 'assessment_id' => $assessment->id],
+            ]);
 
-        $request->update([
-            'status'        => 'ai_assessed',
-            'assessment_id' => $assessment->id,
-        ]);
-
-        AuditLog::create([
-            'user_id'    => $user->id,
-            'action'     => 'assess_request',
-            'model_type' => 'asset_request',
-            'model_id'   => $request->id,
-            'new_state'  => ['status' => 'ai_assessed', 'assessment_id' => $assessment->id],
-        ]);
-
-        return $assessment;
+            return $assessment;
+        });
     }
 }

@@ -64,14 +64,16 @@ class DemoDataSeeder extends Seeder
             $catModels[] = AssetCategory::firstOrCreate(['name' => $cat['name']], $cat);
         }
 
+        $demoPassword = config('app.demo_password', 'password');
+
         // Helper to safely create user without mass-assignment constraints
-        $createUser = function (string $name, string $email, string $role, string $password = 'password') {
+        $createUser = function (string $name, string $email, string $role) use ($demoPassword) {
             $user = User::where('email', $email)->first();
             if (!$user) {
                 $user = new User();
                 $user->name     = $name;
                 $user->email    = $email;
-                $user->password = Hash::make($password);
+                $user->password = Hash::make($demoPassword);
                 $user->role     = $role;
                 $user->status   = 'active';
                 $user->save();
@@ -95,7 +97,7 @@ class DemoDataSeeder extends Seeder
             'experience_years' => 5,
             'location'         => 'Cumilla, Bangladesh',
             'bio'              => 'Bakes handmade rotis and dry snacks for local markets. A commercial mixer will triple daily batch output.',
-            'verified'         => false,
+            'verified'         => true,
         ]);
 
         $community = $createUser('Master Anisur Rahman', 'community@demo.local', 'community');
@@ -149,9 +151,9 @@ class DemoDataSeeder extends Seeder
                     'demand'     => 'Local wholesale contract verified.',
                     'viability'  => 'Cost matches market baseline for direct productive output.',
                 ],
-                'method_version'       => 'v1.0-rules',
+                'method_version'       => 'v1.1-rules',
                 'is_ai_generated'      => false,
-                'provider_name'        => 'NOT AN LLM RESPONSE',
+                'provider_name'        => 'rule-engine',
             ]
         );
 

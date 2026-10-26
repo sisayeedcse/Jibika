@@ -14,7 +14,7 @@ class StoreAssetRequestRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'category_id'              => ['nullable', 'exists:asset_categories,id'],
+            'category_id'              => ['required', 'exists:asset_categories,id'],
             'requested_amount_bdt'     => ['required', 'numeric', 'min:1000', 'max:5000000'],
             'reason'                   => ['required', 'string', 'max:2000'],
             'livelihood_justification' => ['required', 'string', 'max:2000'],

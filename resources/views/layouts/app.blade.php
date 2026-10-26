@@ -4,6 +4,7 @@
 <link rel="icon" type="image/svg+xml" href="{{ asset('favicon.svg') }}">
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="csrf-token" content="{{ csrf_token() }}">
 <title>{{ $title ?? 'JIBIKA' }}</title>
 <meta name="description" content="JIBIKA connects workers with productive assets through verified community assessment and transparent funding coordination.">
 <script src="https://cdn.tailwindcss.com"></script>
@@ -38,15 +39,15 @@
       <div class="flex items-center justify-between h-[68px]">
         <a href="{{ url('/') }}" class="text-[1.35rem] font-extrabold tracking-[0.02em] text-[#127A4A] leading-none" aria-label="JIBIKA Home">JIBIKA</a>
         <div class="hidden md:flex items-center gap-7 text-[0.88rem] font-medium text-secondary">
-          <a href="{{ url('/') }}" class="hover:text-[#127A4A] transition-colors">Home</a>
-          <a href="{{ route('how-it-works') }}" class="hover:text-[#127A4A] transition-colors">How It Works</a>
+          <a href="{{ url('/') }}" class="hover:text-[#127A4A] transition-colors">{{ __('Home') }}</a>
+          <a href="{{ route('how-it-works') }}" class="hover:text-[#127A4A] transition-colors">{{ __('How It Works') }}</a>
           @auth
-            <a href="{{ route('dashboard') }}" class="hover:text-[#127A4A] transition-colors">Dashboard</a>
+            <a href="{{ route('dashboard') }}" class="hover:text-[#127A4A] transition-colors">{{ __('Dashboard') }}</a>
             @if(auth()->user()?->isAdmin())
-              <a href="{{ route('admin.dashboard') }}" class="hover:text-[#127A4A] transition-colors">Admin</a>
+              <a href="{{ route('admin.dashboard') }}" class="hover:text-[#127A4A] transition-colors">{{ __('Admin') }}</a>
             @endif
             <a href="{{ route('notifications.index') }}" class="relative hover:text-[#127A4A] transition-colors" aria-label="Notifications">
-              Notifications
+              {{ __('Notifications') }}
               @php $unread = auth()->user()?->unreadNotifications?->count() ?? 0; @endphp
               @if($unread > 0)
                 <span class="absolute -top-1 -right-2.5 inline-flex items-center justify-center w-[1.1rem] h-[1.1rem] text-[0.6rem] font-bold text-white bg-[#E05D44] rounded-full">{{ $unread }}</span>
@@ -55,44 +56,71 @@
               @endif
             </a>
             <form id="logout-form" action="{{ route('logout') }}" method="POST" class="hidden">@csrf</form>
-            <a href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();" class="hover:text-[#127A4A] transition-colors">Sign Out</a>
+            <a href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();" class="hover:text-[#127A4A] transition-colors">{{ __('Sign Out') }}</a>
           @endauth
           @guest
-            <a href="{{ route('login') }}" class="hover:text-[#127A4A] transition-colors">Sign In</a>
-            <a href="{{ route('register') }}" class="inline-flex items-center px-4 py-2 rounded-lg bg-[#127A4A] text-white text-[0.8rem] font-semibold hover:bg-[#0e5a36] transition-colors shadow-md shadow-emerald-900/10">Register</a>
+            <a href="{{ route('login') }}" class="hover:text-[#127A4A] transition-colors">{{ __('Sign In') }}</a>
+            <a href="{{ route('register') }}" class="inline-flex items-center px-4 py-2 rounded-lg bg-[#127A4A] text-white text-[0.8rem] font-semibold hover:bg-[#0e5a36] transition-colors shadow-md shadow-emerald-900/10">{{ __('Register') }}</a>
           @endguest
+
+          {{-- Language Switcher --}}
+          <div class="inline-flex items-center rounded-lg border border-slate-200 p-0.5 text-xs font-semibold bg-slate-50 ml-2">
+            <form action="{{ route('locale.switch', 'en') }}" method="POST" class="inline">
+              @csrf
+              <button type="submit" class="px-2 py-0.5 rounded {{ app()->getLocale() === 'en' ? 'bg-white text-[#127A4A] shadow-xs' : 'text-slate-500 hover:text-slate-900' }}">EN</button>
+            </form>
+            <span class="text-slate-300">|</span>
+            <form action="{{ route('locale.switch', 'bn') }}" method="POST" class="inline">
+              @csrf
+              <button type="submit" class="px-2 py-0.5 rounded {{ app()->getLocale() === 'bn' ? 'bg-white text-[#127A4A] shadow-xs' : 'text-slate-500 hover:text-slate-900' }}">বাংলা</button>
+            </form>
+          </div>
         </div>
-        <div class="md:hidden">
+        <div class="md:hidden flex items-center gap-3">
+          {{-- Mobile Language Switcher --}}
+          <div class="inline-flex items-center rounded-lg border border-slate-200 p-0.5 text-xs font-semibold bg-slate-50">
+            <form action="{{ route('locale.switch', 'en') }}" method="POST" class="inline">
+              @csrf
+              <button type="submit" class="px-1.5 py-0.5 rounded {{ app()->getLocale() === 'en' ? 'bg-white text-[#127A4A]' : 'text-slate-500' }}">EN</button>
+            </form>
+            <span class="text-slate-300">|</span>
+            <form action="{{ route('locale.switch', 'bn') }}" method="POST" class="inline">
+              @csrf
+              <button type="submit" class="px-1.5 py-0.5 rounded {{ app()->getLocale() === 'bn' ? 'bg-white text-[#127A4A]' : 'text-slate-500' }}">বাং</button>
+            </form>
+          </div>
           <button onclick="document.getElementById('mobile-menu').classList.toggle('hidden')" class="text-secondary hover:text-[#127A4A] p-2" aria-label="Toggle menu" aria-expanded="false" aria-controls="mobile-menu">☰</button>
         </div>
       </div>
     </div>
     <div id="mobile-menu" class="hidden md:hidden border-t border-subtle bg-white/95 backdrop-blur-xl">
       <div class="max-w-6xl mx-auto px-6 py-4 flex flex-col gap-3 text-sm font-medium text-secondary">
-        <a href="{{ url('/') }}" class="py-1.5 hover:text-[#127A4A]">Home</a>
-        <a href="{{ route('how-it-works') }}" class="py-1.5 hover:text-[#127A4A]">How It Works</a>
+        <a href="{{ url('/') }}" class="py-1.5 hover:text-[#127A4A]">{{ __('Home') }}</a>
+        <a href="{{ route('how-it-works') }}" class="py-1.5 hover:text-[#127A4A]">{{ __('How It Works') }}</a>
         @auth
-          <a href="{{ route('dashboard') }}" class="py-1.5 hover:text-[#127A4A]">Dashboard</a>
+          <a href="{{ route('dashboard') }}" class="py-1.5 hover:text-[#127A4A]">{{ __('Dashboard') }}</a>
           @if(auth()->user()?->isAdmin())
-            <a href="{{ route('admin.dashboard') }}" class="py-1.5 hover:text-[#127A4A]">Admin</a>
+            <a href="{{ route('admin.dashboard') }}" class="py-1.5 hover:text-[#127A4A]">{{ __('Admin') }}</a>
           @endif
-          <a href="{{ route('notifications.index') }}" class="py-1.5 hover:text-[#127A4A]">Notifications</a>
-          <a href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();" class="py-1.5 hover:text-[#127A4A]">Sign Out</a>
+          <a href="{{ route('notifications.index') }}" class="py-1.5 hover:text-[#127A4A]">{{ __('Notifications') }}</a>
+          <a href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();" class="py-1.5 hover:text-[#127A4A]">{{ __('Sign Out') }}</a>
         @endauth
         @guest
-          <a href="{{ route('login') }}" class="py-1.5 hover:text-[#127A4A]">Sign In</a>
-          <a href="{{ route('register') }}" class="py-1.5 text-[#127A4A] font-semibold">Register</a>
+          <a href="{{ route('login') }}" class="py-1.5 hover:text-[#127A4A]">{{ __('Sign In') }}</a>
+          <a href="{{ route('register') }}" class="py-1.5 text-[#127A4A] font-semibold">{{ __('Register') }}</a>
         @endguest
       </div>
     </div>
   </nav>
 
+  <x-walkthrough-banner />
+
   <main class="max-w-6xl mx-auto px-6 lg:px-8 py-8 md:py-10 flex-grow">
     @if(session('success'))
-      <div class="mb-6 p-4 rounded-xl bg-[#127A4A]/8 border border-[#127A4A]/15 text-[#127A4A] text-sm font-medium" role="status">{{ session('success') }}</div>
+      <div class="mb-6 p-4 rounded-xl bg-[#127A4A]/8 border border-[#127A4A]/15 text-[#127A4A] text-sm font-medium" role="status">{{ __(session('success')) }}</div>
     @endif
     @if(session('warning'))
-      <div class="mb-6 p-4 rounded-xl bg-amber-50 border border-amber-200 text-amber-800 text-sm font-medium" role="status">{{ session('warning') }}</div>
+      <div class="mb-6 p-4 rounded-xl bg-amber-50 border border-amber-200 text-amber-800 text-sm font-medium" role="status">{{ __(session('warning')) }}</div>
     @endif
     @if($errors->any())
       <div class="mb-6 p-4 rounded-xl bg-[#fbeae6] border border-[#E05D44]/20 text-[#E05D44] text-sm font-medium" role="alert">

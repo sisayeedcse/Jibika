@@ -333,7 +333,9 @@ class JibikaPhase2AcceptanceTest extends TestCase
         $worker = User::factory()->create(['role' => 'worker', 'status' => 'active']);
 
         $this->actingAs($worker);
+        $cat = AssetCategory::create(['name' => 'Sewing Kit', 'name_bn' => 'সেলাই কিট', 'estimated_cost_bdt' => 20000]);
         $createResponse = $this->postWithCsrf('/requests', [
+            'category_id' => $cat->id,
             'requested_amount_bdt' => 20000,
             'reason' => 'Sewing kit',
             'livelihood_justification' => 'Clothing manufacture',

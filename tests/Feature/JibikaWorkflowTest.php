@@ -179,7 +179,7 @@ class JibikaWorkflowTest extends \Tests\TestCase
         $response->assertRedirect();
         $this->assertDatabaseHas('assessment_records', [
             'request_id' => $request->id,
-            'provider_name' => 'NOT AN LLM RESPONSE',
+            'provider_name' => 'rule-engine',
             'is_ai_generated' => false,
         ]);
     }

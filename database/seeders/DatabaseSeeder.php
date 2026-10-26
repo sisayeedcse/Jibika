@@ -11,6 +11,10 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        $this->call(DemoDataSeeder::class);
+        $this->call(CategorySeeder::class);
+
+        if (config('app.demo_mode', false)) {
+            $this->call(DemoDataSeeder::class);
+        }
     }
 }
