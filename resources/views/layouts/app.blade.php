@@ -117,10 +117,10 @@
 
   <main class="max-w-6xl mx-auto px-6 lg:px-8 py-8 md:py-10 flex-grow">
     @if(session('success'))
-      <div class="mb-6 p-4 rounded-xl bg-[#127A4A]/8 border border-[#127A4A]/15 text-[#127A4A] text-sm font-medium" role="status">{{ session('success') }}</div>
+      <div class="mb-6 p-4 rounded-xl bg-[#127A4A]/8 border border-[#127A4A]/15 text-[#127A4A] text-sm font-medium" role="status">{{ __(session('success')) }}</div>
     @endif
     @if(session('warning'))
-      <div class="mb-6 p-4 rounded-xl bg-amber-50 border border-amber-200 text-amber-800 text-sm font-medium" role="status">{{ session('warning') }}</div>
+      <div class="mb-6 p-4 rounded-xl bg-amber-50 border border-amber-200 text-amber-800 text-sm font-medium" role="status">{{ __(session('warning')) }}</div>
     @endif
     @if($errors->any())
       <div class="mb-6 p-4 rounded-xl bg-[#fbeae6] border border-[#E05D44]/20 text-[#E05D44] text-sm font-medium" role="alert">

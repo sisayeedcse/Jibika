@@ -72,7 +72,7 @@
             <p class="font-bold text-[#0f172a] mb-3">Rationale</p>
             @if($request->assessment->explanation_json)
               @foreach($request->assessment->explanation_json as $key => $value)
-                <div class="mb-2"><span class="font-semibold text-[#0f172a]">{{ ucfirst(str_replace('_', ' ', $key)) }}:</span> <span class="text-[#475569]">{{ $value }}</span></div>
+                <div class="mb-2"><span class="font-semibold text-[#0f172a]">{{ __(ucfirst(str_replace('_', ' ', $key))) }}:</span> <span class="text-[#475569]">{{ __($value) }}</span></div>
               @endforeach
             @else
               <p class="text-[#475569]">No explanation available.</p>

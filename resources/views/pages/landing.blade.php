@@ -283,7 +283,7 @@
         </div>
       </div>
       <div class="mt-8 pt-6 border-t border-[#f1f5f9] flex flex-col md:flex-row md:items-center justify-between gap-2 text-[0.7rem] text-[#94a3b8]">
-        <span>JIBIKA — Production-Oriented Web Application</span>
+        <span>JIBIKA — Functional Architectural Prototype</span>
         <span>Simulated funding mode &bull; Rules-based and external AI assessment provenance clearly stated.</span>
       </div>
     </div>

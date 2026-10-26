@@ -7,18 +7,21 @@
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 [![Demo](https://img.shields.io/badge/Live%20Demo-jibika.gadgetexa.com-emerald)](https://jibika.gadgetexa.com)
 
-> **JIBIKA** connects underserved micro-entrepreneurs in Bangladesh (tailors, bakers, carpenters, smallholder farmers) with physical, income-generating productive assets through transparent community physical verification, deterministic explainable viability scoring, simulated asset sponsorship, competitive equipment procurement, and long-term livelihood impact tracking.
+> **JIBIKA** is a functional architectural prototype connecting informal micro-entrepreneurs in Bangladesh (tailors, bakers, carpenters, smallholder artisans) with physical, income-generating productive assets through transparent community physical verification, deterministic explainable viability scoring, simulated asset sponsorship, competitive equipment procurement, and long-term livelihood impact tracking.
 
 ---
 
 ## 🌐 Live System & Demo Access
 
 - **Public Live URL:** [https://jibika.gadgetexa.com](https://jibika.gadgetexa.com)
-- **One-Click Demo Mode:** Available directly on `/login` and via the top-level **Judge Walkthrough Banner**.
+- **One-Click Demo Mode:** Accessible via `/login` and the persistent top-level **Judge Walkthrough Banner**.
 
-### Seeded Demonstration Personas (Default Password: `password`)
+### Seeded Demonstration Personas
+> *Note: Rahim Uddin, Fatima Begum, Master Anisur Rahman, and associated demonstration entities are fictional simulation personas created specifically to illustrate the complete 9-stage lifecycle.*
 
-| Role | Name | Email | Purpose in 9-Stage Lifecycle |
+When `DEMO_MODE=true` is enabled, all demo personas authenticate with the value configured in `DEMO_PASSWORD` in your `.env` (defaults to `password`), or via one-click persona authentication buttons:
+
+| Role | Fictional Persona | Email | Purpose in 9-Stage Lifecycle |
 |---|---|---|---|
 | **Worker** | Rahim Uddin | `worker@demo.local` | Request creator; owns delivered sewing machine with active monthly income logs. |
 | **Community Verifier** | Master Anisur Rahman | `community@demo.local` | Local trade association leader; reviews and inspects pending requests on-ground. |
@@ -28,17 +31,17 @@
 
 ---
 
-## 💡 The Core Problem: Breaking Microcredit Debt Traps
+## 💡 The Core Approach: In-Kind Productive Financing
 
-In developing economies like Bangladesh, informal micro-entrepreneurs frequently turn to high-interest microcredit loans to purchase productive equipment. However:
-1. **Cash Diversion:** Unencumbered cash loans are frequently diverted to urgent household consumption, medical emergencies, or existing debt service rather than equipment.
-2. **Compound Interest Traps:** High weekly repayment schedules begin immediately before the asset generates incremental revenue.
-3. **Ghost Projects:** Without independent physical verification and post-handover monitoring, micro-grants suffer from high non-completion rates.
+In informal economies, micro-entrepreneurs frequently struggle to acquire productive machinery:
+1. **Cash Diversion Risk:** Unencumbered cash loans or grants can easily be diverted to acute household emergencies, healthcare needs, or existing debts rather than capital equipment.
+2. **Immediate Repayment Stress:** Traditional micro-credit repayment schedules often begin days after disbursement—before an artisan can install equipment, source material, and generate incremental revenue.
+3. **Execution Gaps:** Without physical verification of trade readiness and post-handover tracking, community support initiatives struggle to measure tangible economic mobility.
 
-### The JIBIKA Solution: In-Kind Productive Financing
-- **Zero Cash Handouts:** Financing is strictly routed to vetted equipment vendors who deliver physical machinery directly to the artisan.
-- **Physical Handover Proof:** Deliveries require photographic evidence, serial verification, and signed worker receipt before vendor disbursement.
-- **Post-Delivery Impact Tracking:** Periodic check-ins record real household net income and production volume over time.
+### The JIBIKA In-Kind Model
+- **Direct Equipment Procurement:** Capital is disbursed directly to vetted machinery vendors rather than handed out as cash.
+- **Physical Handover Proof:** Equipment delivery requires photo evidence, machine serial inspection, and confirmed worker receipt.
+- **Long-Term Monitoring:** Periodic check-ins record verified net monthly household income and production capacity over time.
 
 ---
 
@@ -74,27 +77,27 @@ JIBIKA strictly enforces **honest technical provenance** across its intelligence
 
 ### 1. Natural-Language Request Builder (`RequestDraftService`)
 - Micro-entrepreneurs can express their equipment need in unstructured Bangla or English (or via Web Speech voice dictation).
-- Uses Google Gemini Flash with schema-enforced JSON structured output.
+- Integrates with Google Gemini Flash using schema-enforced JSON structured output.
 - **Defensive Safeguards:**
   - Automatic PII redaction: Strips Bangladesh phone numbers (`01XXXXXXXXX`), NID numbers, and bank account sequences before model ingestion.
   - Strict catalog mapping: Only maps to existing, admin-approved asset categories.
-  - Input clamping: Discards hallucinated or out-of-range figures (clamps strictly to BDT 1,000 – 5,000,000; defaults to category benchmark).
-  - Deterministic Keyword Fallback: Transparently falls back to bilingual keyword matching if the AI provider is disabled, offline, or unconfigured.
+  - Input bounds clamping: Discards out-of-range figures (clamps strictly to BDT 1,000 – 5,000,000; defaults to category benchmark).
+  - Deterministic Keyword Fallback: Transparently falls back to bilingual keyword matching if the AI provider is disabled, unconfigured, or offline.
 
 ### 2. Honest Rule-Based Assessment Engine (`AIService` `v1.1-rules`)
 - JIBIKA does **not** masquerade deterministic heuristics as generative artificial intelligence.
 - Evaluates four real objective inputs:
   - **Cost-to-Benchmark Ratio:** Compares requested amount against verified catalog market estimates (flags price anomalies >50%).
   - **Worker Experience:** Multi-year trade background increases viability score.
-  - **Justification Depth:** Evaluates business rationale and uniform contract potential.
+  - **Justification Depth:** Evaluates business rationale and contract clarity.
   - **Geographic Context:** Matches artisan location with trade clusters.
-- **Audit Transparency:** Output metadata is explicitly stamped `is_ai_generated = false` and `provider_name = 'rule-engine'`.
+- **Audit Transparency:** Output metadata is explicitly stamped `is_ai_generated = false` and `provider_name = 'rule-engine'`. Canonical audit records are stored in English with localized display keys and warning tags in the UI.
 
 ---
 
 ## 🔒 Security & Data Integrity
 
-- **Role-Based Access Control (RBAC):** Strict middleware guards (`active`, `admin`, role checks) prevent unauthorized role escalation, IDOR vulnerabilities, or cross-tenant data leakage.
+- **Role-Based Access Control (RBAC):** Strict middleware guards (`active`, `EnsureAdmin`, role checks) prevent unauthorized role escalation, IDOR vulnerabilities, or cross-tenant data leakage.
 - **Pessimistic Concurrency:** Database-level pessimistic locking (`lockForUpdate()`) ensures concurrent contributor pledges or assessment triggers never exceed funding caps or cause race conditions.
 - **Immutable Audit Trail:** All administrative decisions, quotation selections, user suspensions, and state transitions are permanently recorded in an immutable audit table.
 - **Simulated Crowdfunding Transparency:** To prevent regulatory ambiguity, all demonstration mode pledges are explicitly labeled as simulated, non-custodial commitments.
@@ -124,8 +127,8 @@ JIBIKA strictly enforces **honest technical provenance** across its intelligence
 
 1. **Clone the repository:**
    ```bash
-   git clone https://github.com/sayeedalam/jibika.git
-   cd jibika
+   git clone https://github.com/sisayeedcse/Jibika.git
+   cd Jibika
    ```
 
 2. **Install PHP dependencies:**
@@ -160,10 +163,11 @@ JIBIKA strictly enforces **honest technical provenance** across its intelligence
    ```
    Open your browser at `http://localhost:8000`.
 
-7. **Resetting Demo Data at Any Time:**
+7. **Resetting Demo Data (Manual Only):**
    ```bash
    php artisan demo:reset
    ```
+   > ⚠️ **Warning:** `demo:reset` is a destructive administrative command that executes `migrate:fresh --seed` in demo mode. Run it by hand only when resetting demonstration data. Never schedule it via cron or run it during active judging sessions.
 
 ---
 
@@ -212,7 +216,7 @@ app/
     ├── GeminiClient.php    # Low-level structured HTTP client with timeouts
     └── RequestDraftService.php # Natural language parser & PII redactor
 resources/
-├── lang/ or lang/          # Bilingual translation dictionaries (en, bn.json)
+├── lang/                   # Bilingual translation dictionaries (en, bn validation and bn.json)
 └── views/
     ├── auth/               # Login with Quick Demo Personas
     ├── components/         # Status badges, Walkthrough banner, Provenance tags
@@ -225,13 +229,13 @@ resources/
 
 - **Solo Participant:** Md. Sayeed Alam
 - **Baseline Release:** `v0.9-pre-hackathon` (Tagged at baseline commit `0446857`).
-- **YUNet 2026 Additions:**
+- **YUNet 2026 Preparation Additions (`pre-yunet-prep` branch):**
   - Natural-language request drafting via Google Gemini Flash with schema enforcement and PII redaction.
   - Bangla voice-to-text integration via Web Speech API (`bn-BD`).
-  - Transparent rule assessment engine (`v1.1-rules`) with strict honest provenance.
-  - Role-based one-click demo mode with CSRF protection, rate limiting, and seeded narrative walkthroughs.
+  - Transparent rule assessment engine (`v1.1-rules`) with strict non-AI provenance tagging.
+  - Role-based one-click demo mode with CSRF protection, rate limiting, and 5-persona walkthrough banner.
   - Bilingual localization switcher (`en` / `bn`).
-  - Pessimistic concurrency locks, admin hardening, and `demo:reset` automation.
+  - Pessimistic concurrency locks on assessment and funding, admin hardening (`EnsureAdmin`), and `demo:reset` command.
 
 ---
 
